@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SalesOrdersRouteImport } from './routes/sales-orders'
 import { Route as ProductsRouteImport } from './routes/products'
+import { Route as ManufacturingRouteImport } from './routes/manufacturing'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SalesOrdersRoute = SalesOrdersRouteImport.update({
@@ -23,6 +24,11 @@ const ProductsRoute = ProductsRouteImport.update({
   path: '/products',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ManufacturingRoute = ManufacturingRouteImport.update({
+  id: '/manufacturing',
+  path: '/manufacturing',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,30 +37,34 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/manufacturing': typeof ManufacturingRoute
   '/products': typeof ProductsRoute
   '/sales-orders': typeof SalesOrdersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/manufacturing': typeof ManufacturingRoute
   '/products': typeof ProductsRoute
   '/sales-orders': typeof SalesOrdersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/manufacturing': typeof ManufacturingRoute
   '/products': typeof ProductsRoute
   '/sales-orders': typeof SalesOrdersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/products' | '/sales-orders'
+  fullPaths: '/' | '/manufacturing' | '/products' | '/sales-orders'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/products' | '/sales-orders'
-  id: '__root__' | '/' | '/products' | '/sales-orders'
+  to: '/' | '/manufacturing' | '/products' | '/sales-orders'
+  id: '__root__' | '/' | '/manufacturing' | '/products' | '/sales-orders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ManufacturingRoute: typeof ManufacturingRoute
   ProductsRoute: typeof ProductsRoute
   SalesOrdersRoute: typeof SalesOrdersRoute
 }
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/manufacturing': {
+      id: '/manufacturing'
+      path: '/manufacturing'
+      fullPath: '/manufacturing'
+      preLoaderRoute: typeof ManufacturingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ManufacturingRoute: ManufacturingRoute,
   ProductsRoute: ProductsRoute,
   SalesOrdersRoute: SalesOrdersRoute,
 }
