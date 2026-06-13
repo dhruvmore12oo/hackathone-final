@@ -15,6 +15,7 @@ import { Route as ProductsRouteImport } from './routes/products'
 import { Route as ManufacturingRouteImport } from './routes/manufacturing'
 import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as CopilotRouteImport } from './routes/copilot'
+import { Route as BomRouteImport } from './routes/bom'
 import { Route as AuditLogsRouteImport } from './routes/audit-logs'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -48,6 +49,11 @@ const CopilotRoute = CopilotRouteImport.update({
   path: '/copilot',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BomRoute = BomRouteImport.update({
+  id: '/bom',
+  path: '/bom',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuditLogsRoute = AuditLogsRouteImport.update({
   id: '/audit-logs',
   path: '/audit-logs',
@@ -62,6 +68,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/audit-logs': typeof AuditLogsRoute
+  '/bom': typeof BomRoute
   '/copilot': typeof CopilotRoute
   '/inventory': typeof InventoryRoute
   '/manufacturing': typeof ManufacturingRoute
@@ -72,6 +79,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/audit-logs': typeof AuditLogsRoute
+  '/bom': typeof BomRoute
   '/copilot': typeof CopilotRoute
   '/inventory': typeof InventoryRoute
   '/manufacturing': typeof ManufacturingRoute
@@ -83,6 +91,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/audit-logs': typeof AuditLogsRoute
+  '/bom': typeof BomRoute
   '/copilot': typeof CopilotRoute
   '/inventory': typeof InventoryRoute
   '/manufacturing': typeof ManufacturingRoute
@@ -95,6 +104,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/audit-logs'
+    | '/bom'
     | '/copilot'
     | '/inventory'
     | '/manufacturing'
@@ -105,6 +115,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/audit-logs'
+    | '/bom'
     | '/copilot'
     | '/inventory'
     | '/manufacturing'
@@ -115,6 +126,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/audit-logs'
+    | '/bom'
     | '/copilot'
     | '/inventory'
     | '/manufacturing'
@@ -126,6 +138,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuditLogsRoute: typeof AuditLogsRoute
+  BomRoute: typeof BomRoute
   CopilotRoute: typeof CopilotRoute
   InventoryRoute: typeof InventoryRoute
   ManufacturingRoute: typeof ManufacturingRoute
@@ -178,6 +191,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CopilotRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bom': {
+      id: '/bom'
+      path: '/bom'
+      fullPath: '/bom'
+      preLoaderRoute: typeof BomRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/audit-logs': {
       id: '/audit-logs'
       path: '/audit-logs'
@@ -198,6 +218,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuditLogsRoute: AuditLogsRoute,
+  BomRoute: BomRoute,
   CopilotRoute: CopilotRoute,
   InventoryRoute: InventoryRoute,
   ManufacturingRoute: ManufacturingRoute,
