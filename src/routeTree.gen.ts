@@ -10,19 +10,40 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VendorsRouteImport } from './routes/vendors'
+import { Route as UsersRouteImport } from './routes/users'
+import { Route as SignUpRouteImport } from './routes/sign-up'
+import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as SalesOrdersRouteImport } from './routes/sales-orders'
 import { Route as PurchaseOrdersRouteImport } from './routes/purchase-orders'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as ManufacturingRouteImport } from './routes/manufacturing'
 import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as CopilotRouteImport } from './routes/copilot'
+import { Route as ChooseRoleRouteImport } from './routes/choose-role'
 import { Route as BomRouteImport } from './routes/bom'
 import { Route as AuditLogsRouteImport } from './routes/audit-logs'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SignUpSsoCallbackRouteImport } from './routes/sign-up.sso-callback'
+import { Route as SignInSsoCallbackRouteImport } from './routes/sign-in.sso-callback'
 
 const VendorsRoute = VendorsRouteImport.update({
   id: '/vendors',
   path: '/vendors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsersRoute = UsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignUpRoute = SignUpRouteImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignInRoute = SignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SalesOrdersRoute = SalesOrdersRouteImport.update({
@@ -55,6 +76,11 @@ const CopilotRoute = CopilotRouteImport.update({
   path: '/copilot',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChooseRoleRoute = ChooseRoleRouteImport.update({
+  id: '/choose-role',
+  path: '/choose-role',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BomRoute = BomRouteImport.update({
   id: '/bom',
   path: '/bom',
@@ -70,43 +96,71 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignUpSsoCallbackRoute = SignUpSsoCallbackRouteImport.update({
+  id: '/sso-callback',
+  path: '/sso-callback',
+  getParentRoute: () => SignUpRoute,
+} as any)
+const SignInSsoCallbackRoute = SignInSsoCallbackRouteImport.update({
+  id: '/sso-callback',
+  path: '/sso-callback',
+  getParentRoute: () => SignInRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/audit-logs': typeof AuditLogsRoute
   '/bom': typeof BomRoute
+  '/choose-role': typeof ChooseRoleRoute
   '/copilot': typeof CopilotRoute
   '/inventory': typeof InventoryRoute
   '/manufacturing': typeof ManufacturingRoute
   '/products': typeof ProductsRoute
   '/purchase-orders': typeof PurchaseOrdersRoute
   '/sales-orders': typeof SalesOrdersRoute
+  '/sign-in': typeof SignInRouteWithChildren
+  '/sign-up': typeof SignUpRouteWithChildren
+  '/users': typeof UsersRoute
   '/vendors': typeof VendorsRoute
+  '/sign-in/sso-callback': typeof SignInSsoCallbackRoute
+  '/sign-up/sso-callback': typeof SignUpSsoCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/audit-logs': typeof AuditLogsRoute
   '/bom': typeof BomRoute
+  '/choose-role': typeof ChooseRoleRoute
   '/copilot': typeof CopilotRoute
   '/inventory': typeof InventoryRoute
   '/manufacturing': typeof ManufacturingRoute
   '/products': typeof ProductsRoute
   '/purchase-orders': typeof PurchaseOrdersRoute
   '/sales-orders': typeof SalesOrdersRoute
+  '/sign-in': typeof SignInRouteWithChildren
+  '/sign-up': typeof SignUpRouteWithChildren
+  '/users': typeof UsersRoute
   '/vendors': typeof VendorsRoute
+  '/sign-in/sso-callback': typeof SignInSsoCallbackRoute
+  '/sign-up/sso-callback': typeof SignUpSsoCallbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/audit-logs': typeof AuditLogsRoute
   '/bom': typeof BomRoute
+  '/choose-role': typeof ChooseRoleRoute
   '/copilot': typeof CopilotRoute
   '/inventory': typeof InventoryRoute
   '/manufacturing': typeof ManufacturingRoute
   '/products': typeof ProductsRoute
   '/purchase-orders': typeof PurchaseOrdersRoute
   '/sales-orders': typeof SalesOrdersRoute
+  '/sign-in': typeof SignInRouteWithChildren
+  '/sign-up': typeof SignUpRouteWithChildren
+  '/users': typeof UsersRoute
   '/vendors': typeof VendorsRoute
+  '/sign-in/sso-callback': typeof SignInSsoCallbackRoute
+  '/sign-up/sso-callback': typeof SignUpSsoCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -114,49 +168,71 @@ export interface FileRouteTypes {
     | '/'
     | '/audit-logs'
     | '/bom'
+    | '/choose-role'
     | '/copilot'
     | '/inventory'
     | '/manufacturing'
     | '/products'
     | '/purchase-orders'
     | '/sales-orders'
+    | '/sign-in'
+    | '/sign-up'
+    | '/users'
     | '/vendors'
+    | '/sign-in/sso-callback'
+    | '/sign-up/sso-callback'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/audit-logs'
     | '/bom'
+    | '/choose-role'
     | '/copilot'
     | '/inventory'
     | '/manufacturing'
     | '/products'
     | '/purchase-orders'
     | '/sales-orders'
+    | '/sign-in'
+    | '/sign-up'
+    | '/users'
     | '/vendors'
+    | '/sign-in/sso-callback'
+    | '/sign-up/sso-callback'
   id:
     | '__root__'
     | '/'
     | '/audit-logs'
     | '/bom'
+    | '/choose-role'
     | '/copilot'
     | '/inventory'
     | '/manufacturing'
     | '/products'
     | '/purchase-orders'
     | '/sales-orders'
+    | '/sign-in'
+    | '/sign-up'
+    | '/users'
     | '/vendors'
+    | '/sign-in/sso-callback'
+    | '/sign-up/sso-callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuditLogsRoute: typeof AuditLogsRoute
   BomRoute: typeof BomRoute
+  ChooseRoleRoute: typeof ChooseRoleRoute
   CopilotRoute: typeof CopilotRoute
   InventoryRoute: typeof InventoryRoute
   ManufacturingRoute: typeof ManufacturingRoute
   ProductsRoute: typeof ProductsRoute
   PurchaseOrdersRoute: typeof PurchaseOrdersRoute
   SalesOrdersRoute: typeof SalesOrdersRoute
+  SignInRoute: typeof SignInRouteWithChildren
+  SignUpRoute: typeof SignUpRouteWithChildren
+  UsersRoute: typeof UsersRoute
   VendorsRoute: typeof VendorsRoute
 }
 
@@ -167,6 +243,27 @@ declare module '@tanstack/react-router' {
       path: '/vendors'
       fullPath: '/vendors'
       preLoaderRoute: typeof VendorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/users': {
+      id: '/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof UsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sign-up': {
+      id: '/sign-up'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof SignUpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sign-in': {
+      id: '/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof SignInRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sales-orders': {
@@ -211,6 +308,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CopilotRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/choose-role': {
+      id: '/choose-role'
+      path: '/choose-role'
+      fullPath: '/choose-role'
+      preLoaderRoute: typeof ChooseRoleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/bom': {
       id: '/bom'
       path: '/bom'
@@ -232,21 +336,71 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sign-up/sso-callback': {
+      id: '/sign-up/sso-callback'
+      path: '/sso-callback'
+      fullPath: '/sign-up/sso-callback'
+      preLoaderRoute: typeof SignUpSsoCallbackRouteImport
+      parentRoute: typeof SignUpRoute
+    }
+    '/sign-in/sso-callback': {
+      id: '/sign-in/sso-callback'
+      path: '/sso-callback'
+      fullPath: '/sign-in/sso-callback'
+      preLoaderRoute: typeof SignInSsoCallbackRouteImport
+      parentRoute: typeof SignInRoute
+    }
   }
 }
+
+interface SignInRouteChildren {
+  SignInSsoCallbackRoute: typeof SignInSsoCallbackRoute
+}
+
+const SignInRouteChildren: SignInRouteChildren = {
+  SignInSsoCallbackRoute: SignInSsoCallbackRoute,
+}
+
+const SignInRouteWithChildren =
+  SignInRoute._addFileChildren(SignInRouteChildren)
+
+interface SignUpRouteChildren {
+  SignUpSsoCallbackRoute: typeof SignUpSsoCallbackRoute
+}
+
+const SignUpRouteChildren: SignUpRouteChildren = {
+  SignUpSsoCallbackRoute: SignUpSsoCallbackRoute,
+}
+
+const SignUpRouteWithChildren =
+  SignUpRoute._addFileChildren(SignUpRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuditLogsRoute: AuditLogsRoute,
   BomRoute: BomRoute,
+  ChooseRoleRoute: ChooseRoleRoute,
   CopilotRoute: CopilotRoute,
   InventoryRoute: InventoryRoute,
   ManufacturingRoute: ManufacturingRoute,
   ProductsRoute: ProductsRoute,
   PurchaseOrdersRoute: PurchaseOrdersRoute,
   SalesOrdersRoute: SalesOrdersRoute,
+  SignInRoute: SignInRouteWithChildren,
+  SignUpRoute: SignUpRouteWithChildren,
+  UsersRoute: UsersRoute,
   VendorsRoute: VendorsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

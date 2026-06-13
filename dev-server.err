@@ -1,0 +1,288 @@
+$ vite dev --host "127.0.0.1" --port "5173"
+[33mThe plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the [1mresolve.tsconfigPaths[22m option. You can remove the plugin and set [1mresolve.tsconfigPaths: true[22m in your Vite config instead.[39m
+[2m3:20:47 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mClerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
+[2m3:20:48 pm[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mError: useSidebar must be used within a SidebarProvider.
+    at useSidebar (http://127.0.0.1:5173/src/components/ui/sidebar.tsx:28:9)
+    at SidebarTrigger (http://127.0.0.1:5173/src/components/ui/sidebar.tsx:234:28)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:12868:12)
+    at renderWithHooks (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:4213:19)
+    at updateForwardRef (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:5396:16)
+    at beginWork (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:6204:21)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:851:66)
+    at performUnitOfWork (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:8429:92)
+    at workLoopSync (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:8325:37)
+    at renderRootSync (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:8309:6)
+
+The above error occurred in the <SidebarTrigger> component.
+
+React will try to recreate this component tree from scratch using the error boundary you provided, CatchBoundaryImpl.
+
+[2m3:20:48 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mWarning: Error in route match: __root__/
+[2m3:20:52 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mClerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
+[2m3:21:13 pm[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mError: useSidebar must be used within a SidebarProvider.
+    at useSidebar (http://127.0.0.1:5173/src/components/ui/sidebar.tsx:28:9)
+    at SidebarTrigger (http://127.0.0.1:5173/src/components/ui/sidebar.tsx:234:28)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:12868:12)
+    at renderWithHooks (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:4213:19)
+    at updateForwardRef (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:5396:16)
+    at beginWork (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:6204:21)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:851:66)
+    at performUnitOfWork (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:8429:92)
+    at workLoopSync (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:8325:37)
+    at renderRootSync (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:8309:6)
+
+The above error occurred in the <SidebarTrigger> component.
+
+React will try to recreate this component tree from scratch using the error boundary you provided, CatchBoundaryImpl.
+
+[2m3:21:13 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mWarning: Error in route match: __root__/
+[2m3:21:27 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mClerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
+[2m3:33:43 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mClerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
+[2m3:36:12 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mClerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
+[2m3:39:23 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mClerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
+[2m3:39:24 pm[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mError: useSidebar must be used within a SidebarProvider.
+    at useSidebar (http://127.0.0.1:5173/src/components/ui/sidebar.tsx:28:9)
+    at SidebarTrigger (http://127.0.0.1:5173/src/components/ui/sidebar.tsx:234:28)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:12868:12)
+    at renderWithHooks (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:4213:19)
+    at updateForwardRef (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:5396:16)
+    at beginWork (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:6204:21)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:851:66)
+    at performUnitOfWork (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:8429:92)
+    at workLoopSync (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:8325:37)
+    at renderRootSync (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:8309:6)
+
+The above error occurred in the <SidebarTrigger> component.
+
+React will try to recreate this component tree from scratch using the error boundary you provided, CatchBoundaryImpl.
+
+[2m3:39:24 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mWarning: Error in route match: __root__/
+[2m3:40:37 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mClerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
+[2m3:40:38 pm[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mError: useSidebar must be used within a SidebarProvider.
+    at useSidebar (http://127.0.0.1:5173/src/components/ui/sidebar.tsx:28:9)
+    at SidebarTrigger (http://127.0.0.1:5173/src/components/ui/sidebar.tsx:234:28)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:12868:12)
+    at renderWithHooks (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:4213:19)
+    at updateForwardRef (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:5396:16)
+    at beginWork (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:6204:21)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:851:66)
+    at performUnitOfWork (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:8429:92)
+    at workLoopSync (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:8325:37)
+    at renderRootSync (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:8309:6)
+
+The above error occurred in the <SidebarTrigger> component.
+
+React will try to recreate this component tree from scratch using the error boundary you provided, CatchBoundaryImpl.
+
+[2m3:40:38 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mWarning: Error in route match: __root__/
+[2m3:45:13 pm[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mError: useSidebar must be used within a SidebarProvider.
+    at useSidebar (http://127.0.0.1:5173/src/components/ui/sidebar.tsx:28:9)
+    at SidebarTrigger (http://127.0.0.1:5173/src/components/ui/sidebar.tsx:234:28)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:12868:12)
+    at renderWithHooks (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:4213:19)
+    at updateForwardRef (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:5396:16)
+    at beginWork (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:6204:21)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:851:66)
+    at performUnitOfWork (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:8429:92)
+    at workLoopSync (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:8325:37)
+    at renderRootSync (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:8309:6)
+
+The above error occurred in the <SidebarTrigger> component.
+
+React will try to recreate this component tree from scratch using the error boundary you provided, CatchBoundaryImpl.
+
+[2m3:45:13 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mWarning: Error in route match: __root__/
+[2m3:45:18 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mClerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
+[2m3:45:39 pm[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22mError: useSidebar must be used within a SidebarProvider.
+    at useSidebar (http://127.0.0.1:5173/src/components/ui/sidebar.tsx:28:9)
+    at SidebarTrigger (http://127.0.0.1:5173/src/components/ui/sidebar.tsx:234:28)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:12868:12)
+    at renderWithHooks (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:4213:19)
+    at updateForwardRef (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:5396:16)
+    at beginWork (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:6204:21)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:851:66)
+    at performUnitOfWork (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:8429:92)
+    at workLoopSync (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:8325:37)
+    at renderRootSync (http://127.0.0.1:5173/node_modules/.vite/deps/client-C_PrBcpk.js?v=8fd82bcf:8309:6)
+
+The above error occurred in the <SidebarTrigger> component.
+
+React will try to recreate this component tree from scratch using the error boundary you provided, CatchBoundaryImpl.
+
+[2m3:45:39 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mWarning: Error in route match: __root__/
+[2m3:57:42 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mClerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
+[2m3:58:43 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mClerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
+Error: Invalid server function ID: a8f53c8a074789194a8c2dbbc50e76095e7174eec3259232363d9dca17555971
+    at LoadPluginContext._formatLog (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30602:39)
+    at LoadPluginContext.error (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30599:14)
+    at LoadPluginContext.handler (file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/start-plugin-core/dist/esm/vite/start-compiler-plugin/plugin.js:233:11)
+    at EnvironmentPluginContainer.load (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30345:56)
+    at async loadAndTransform (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:24599:21) {
+  plugin: 'tanstack-start-core:validate-server-fn-id',
+  runnerError: Error: RunnerError
+      at reviveInvokeError (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/module-runner.js:547:64)
+      at Object.invoke (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/module-runner.js:620:11)
+      at async ModuleRunner.getModuleInformation (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/module-runner.js:1199:7)
+      at async request (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/module-runner.js:1216:83)
+      at async getServerFnById (D:\Odoooo\manuflow-design\#tanstack-start-server-fn-resolver:4:3)
+      at async handleServerAction (D:\Odoooo\manuflow-design\node_modules\@tanstack\start-server-core\src\server-functions-handler.ts:49:18)
+      at async next (D:\Odoooo\manuflow-design\node_modules\@tanstack\start-server-core\src\createStartHandler.ts:379:16)
+      at async eval (D:\Odoooo\manuflow-design\src\start.ts:8:12)
+      at async next (D:\Odoooo\manuflow-design\node_modules\@tanstack\start-server-core\src\createStartHandler.ts:379:16)
+      at async eval (D:\Odoooo\manuflow-design\node_modules\@clerk\tanstack-react-start\src\server\clerkMiddleware.ts:78:20)
+}
+Error: Invalid server function ID: a8f53c8a074789194a8c2dbbc50e76095e7174eec3259232363d9dca17555971
+    at LoadPluginContext._formatLog (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30602:39)
+    at LoadPluginContext.error (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30599:14)
+    at LoadPluginContext.handler (file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/start-plugin-core/dist/esm/vite/start-compiler-plugin/plugin.js:233:11)
+    at EnvironmentPluginContainer.load (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30345:56)
+    at async loadAndTransform (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:24599:21)
+    at async fetchModule (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:23234:15)
+    at async handleInvoke (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:26678:21)
+    at async EventEmitter.listenerForInvokeHandler (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:26733:13) {
+  plugin: 'tanstack-start-core:validate-server-fn-id',
+  runnerError: Error: RunnerError
+      at reviveInvokeError (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/module-runner.js:547:64)
+      at Object.invoke (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/module-runner.js:620:11)
+      at async ModuleRunner.getModuleInformation (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/module-runner.js:1199:7)
+      at async request (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/module-runner.js:1216:83)
+      at async getServerFnById (D:\Odoooo\manuflow-design\#tanstack-start-server-fn-resolver:4:3)
+      at async handleServerAction (D:\Odoooo\manuflow-design\node_modules\@tanstack\start-server-core\src\server-functions-handler.ts:49:18)
+      at async next (D:\Odoooo\manuflow-design\node_modules\@tanstack\start-server-core\src\createStartHandler.ts:379:16)
+      at async eval (D:\Odoooo\manuflow-design\src\start.ts:8:12)
+      at async next (D:\Odoooo\manuflow-design\node_modules\@tanstack\start-server-core\src\createStartHandler.ts:379:16)
+      at async eval (D:\Odoooo\manuflow-design\node_modules\@clerk\tanstack-react-start\src\server\clerkMiddleware.ts:78:20)
+}
+[2m4:01:15 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mClerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
+Error: aborted
+    at abortIncoming (node:_http_server:796:17)
+    at socketOnClose (node:_http_server:790:3)
+    at Socket.emit (node:events:536:35)
+    at TCP.<anonymous> (node:net:343:12)
+    at TCP.callbackTrampoline (node:internal/async_hooks:130:17) {
+  code: 'ECONNRESET'
+}
+Error: aborted
+    at abortIncoming (node:_http_server:796:17)
+    at socketOnClose (node:_http_server:790:3)
+    at Socket.emit (node:events:536:35)
+    at TCP.<anonymous> (node:net:343:12)
+    at TCP.callbackTrampoline (node:internal/async_hooks:130:17) {
+  code: 'ECONNRESET'
+}
+[2m4:02:04 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mClerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
+[2m4:28:26 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mClerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
+[2m4:28:34 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mClerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
+[2m4:30:25 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mClerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
+[2m5:16:52 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mClerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
+[2m5:35:29 pm[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22mClerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview
+Error: Error transforming route file D:/Odoooo/manuflow-design/src/routes/sales-orders.tsx: SyntaxError: Identifier 'canCreate' has already been declared. (181:8)
+    at file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-generator/dist/esm/generator.js:127:13
+    at async generate (file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-plugin/dist/esm/core/router-generator-plugin.js:38:4)
+    at async PluginContext.watchChange (file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-plugin/dist/esm/core/router-generator-plugin.js:48:4)
+    at async Promise.all (index 1)
+    at async EnvironmentPluginContainer.hookParallel (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30246:3)
+    at async EnvironmentPluginContainer.watchChange (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30413:3)
+    at async Promise.all (index 0)
+    at async onFileChange (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:26413:3)
+Error: Error transforming route file D:/Odoooo/manuflow-design/src/routes/purchase-orders.tsx: SyntaxError: Identifier 'canCreate' has already been declared. (165:8),Error transforming route file D:/Odoooo/manuflow-design/src/routes/sales-orders.tsx: SyntaxError: Identifier 'canCreate' has already been declared. (181:8)
+    at file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-generator/dist/esm/generator.js:127:13
+    at async generate (file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-plugin/dist/esm/core/router-generator-plugin.js:38:4)
+    at async PluginContext.watchChange (file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-plugin/dist/esm/core/router-generator-plugin.js:48:4)
+    at async Promise.all (index 1)
+    at async EnvironmentPluginContainer.hookParallel (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30246:3)
+    at async EnvironmentPluginContainer.watchChange (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30413:3)
+    at async Promise.all (index 0)
+    at async onFileChange (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:26413:3)
+Error: Error transforming route file D:/Odoooo/manuflow-design/src/routes/purchase-orders.tsx: SyntaxError: Identifier 'canCreate' has already been declared. (165:8),Error transforming route file D:/Odoooo/manuflow-design/src/routes/sales-orders.tsx: SyntaxError: Identifier 'canCreate' has already been declared. (181:8)
+    at file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-generator/dist/esm/generator.js:127:13
+    at async generate (file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-plugin/dist/esm/core/router-generator-plugin.js:38:4)
+    at async PluginContext.watchChange (file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-plugin/dist/esm/core/router-generator-plugin.js:48:4)
+    at async Promise.all (index 1)
+    at async EnvironmentPluginContainer.hookParallel (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30246:3)
+    at async EnvironmentPluginContainer.watchChange (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30413:3)
+    at async Promise.all (index 0)
+    at async onFileChange (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:26413:3)
+Error: Error transforming route file D:/Odoooo/manuflow-design/src/routes/purchase-orders.tsx: SyntaxError: Identifier 'canCreate' has already been declared. (165:8),Error transforming route file D:/Odoooo/manuflow-design/src/routes/sales-orders.tsx: SyntaxError: Identifier 'canCreate' has already been declared. (181:8)
+    at file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-generator/dist/esm/generator.js:127:13
+    at async generate (file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-plugin/dist/esm/core/router-generator-plugin.js:38:4)
+    at async PluginContext.watchChange (file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-plugin/dist/esm/core/router-generator-plugin.js:48:4)
+    at async Promise.all (index 1)
+    at async EnvironmentPluginContainer.hookParallel (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30246:3)
+    at async EnvironmentPluginContainer.watchChange (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30413:3)
+    at async Promise.all (index 0)
+    at async onFileChange (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:26413:3)
+Error: Error transforming route file D:/Odoooo/manuflow-design/src/routes/purchase-orders.tsx: SyntaxError: Identifier 'canCreate' has already been declared. (165:8),Error transforming route file D:/Odoooo/manuflow-design/src/routes/sales-orders.tsx: SyntaxError: Identifier 'canCreate' has already been declared. (181:8)
+    at file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-generator/dist/esm/generator.js:127:13
+    at async generate (file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-plugin/dist/esm/core/router-generator-plugin.js:38:4)
+    at async PluginContext.watchChange (file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-plugin/dist/esm/core/router-generator-plugin.js:48:4)
+    at async Promise.all (index 1)
+    at async EnvironmentPluginContainer.hookParallel (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30246:3)
+    at async EnvironmentPluginContainer.watchChange (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30413:3)
+    at async Promise.all (index 0)
+    at async onFileChange (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:26413:3)
+Error: Error transforming route file D:/Odoooo/manuflow-design/src/routes/purchase-orders.tsx: SyntaxError: Identifier 'canCreate' has already been declared. (165:8),Error transforming route file D:/Odoooo/manuflow-design/src/routes/sales-orders.tsx: SyntaxError: Identifier 'canCreate' has already been declared. (181:8)
+    at file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-generator/dist/esm/generator.js:127:13
+    at async generate (file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-plugin/dist/esm/core/router-generator-plugin.js:38:4)
+    at async PluginContext.watchChange (file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-plugin/dist/esm/core/router-generator-plugin.js:48:4)
+    at async Promise.all (index 1)
+    at async EnvironmentPluginContainer.hookParallel (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30246:3)
+    at async EnvironmentPluginContainer.watchChange (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30413:3)
+    at async Promise.all (index 0)
+    at async onFileChange (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:26413:3)
+Error: Error transforming route file D:/Odoooo/manuflow-design/src/routes/purchase-orders.tsx: SyntaxError: Identifier 'canCreate' has already been declared. (165:8),Error transforming route file D:/Odoooo/manuflow-design/src/routes/sales-orders.tsx: SyntaxError: Identifier 'canCreate' has already been declared. (181:8)
+    at file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-generator/dist/esm/generator.js:127:13
+    at async generate (file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-plugin/dist/esm/core/router-generator-plugin.js:38:4)
+    at async PluginContext.watchChange (file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-plugin/dist/esm/core/router-generator-plugin.js:48:4)
+    at async Promise.all (index 1)
+    at async EnvironmentPluginContainer.hookParallel (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30246:3)
+    at async EnvironmentPluginContainer.watchChange (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30413:3)
+    at async Promise.all (index 0)
+    at async onFileChange (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:26413:3)
+Error: Error transforming route file D:/Odoooo/manuflow-design/src/routes/sales-orders.tsx: SyntaxError: Identifier 'canCreate' has already been declared. (181:8)
+    at file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-generator/dist/esm/generator.js:127:13
+    at async generate (file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-plugin/dist/esm/core/router-generator-plugin.js:38:4)
+    at async PluginContext.watchChange (file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-plugin/dist/esm/core/router-generator-plugin.js:48:4)
+    at async Promise.all (index 1)
+    at async EnvironmentPluginContainer.hookParallel (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30246:3)
+    at async EnvironmentPluginContainer.watchChange (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30413:3)
+    at async Promise.all (index 0)
+    at async onFileChange (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:26413:3)
+Error: Error transforming route file D:/Odoooo/manuflow-design/src/routes/index.tsx: SyntaxError: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (161:10)
+    at file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-generator/dist/esm/generator.js:127:13
+    at async generate (file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-plugin/dist/esm/core/router-generator-plugin.js:38:4)
+    at async PluginContext.watchChange (file:///D:/Odoooo/manuflow-design/node_modules/@tanstack/router-plugin/dist/esm/core/router-generator-plugin.js:48:4)
+    at async Promise.all (index 1)
+    at async EnvironmentPluginContainer.hookParallel (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30246:3)
+    at async EnvironmentPluginContainer.watchChange (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:30413:3)
+    at async Promise.all (index 0)
+    at async onFileChange (file:///D:/Odoooo/manuflow-design/node_modules/vite/dist/node/chunks/node.js:26413:3)
+Warning: Route file "D:/Odoooo/manuflow-design/src/routes/api/copilot/chat.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "D:\Odoooo\manuflow-design\src\routes\api\copilot\-chat.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "D:/Odoooo/manuflow-design/src/routes/api/copilot/chat.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "D:\Odoooo\manuflow-design\src\routes\api\copilot\-chat.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+Warning: Route file "D:/Odoooo/manuflow-design/src/routes/api/copilot/chat.ts" does not export a Route. This file will not be included in the route tree.
+
+If this file is not intended to be a route, you can exclude it using one of these options:
+  1. Rename the file to "D:\Odoooo\manuflow-design\src\routes\api\copilot\-chat.ts" (prefix with "-")
+  2. Use 'routeFileIgnorePattern' in your config to match this file
+
+Current configuration:
+  routeFileIgnorePrefix: "-"
+  routeFileIgnorePattern: undefined
+[33mThe plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the [1mresolve.tsconfigPaths[22m option. You can remove the plugin and set [1mresolve.tsconfigPaths: true[22m in your Vite config instead.[39m
+[33mThe plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the [1mresolve.tsconfigPaths[22m option. You can remove the plugin and set [1mresolve.tsconfigPaths: true[22m in your Vite config instead.[39m

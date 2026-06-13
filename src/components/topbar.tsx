@@ -1,9 +1,10 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Link } from "@tanstack/react-router";
 import { Search, Bell, Command, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
-export function TopBar({ title, breadcrumb }: { title: string; breadcrumb?: string }) {
+export function TopBar({ title, breadcrumb, onNewOrder }: { title: string; breadcrumb?: string; onNewOrder?: () => void }) {
   return (
     <header className="h-14 border-b border-border bg-background/80 backdrop-blur-xl sticky top-0 z-30 flex items-center px-4 gap-3">
       <SidebarTrigger className="size-8" />
@@ -24,9 +25,15 @@ export function TopBar({ title, breadcrumb }: { title: string; breadcrumb?: stri
         <Bell className="size-4" />
         <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-destructive" />
       </Button>
-      <Button size="sm" className="h-8 gap-1.5 text-xs">
-        <Plus className="size-3.5" /> New Order
-      </Button>
+      {onNewOrder ? (
+        <Button size="sm" onClick={onNewOrder} className="h-8 gap-1.5 text-xs">
+          <Plus className="size-3.5" /> New Order
+        </Button>
+      ) : (
+        <Button size="sm" asChild className="h-8 gap-1.5 text-xs">
+          <Link to="/sales-orders"><Plus className="size-3.5" /> New Order</Link>
+        </Button>
+      )}
     </header>
   );
 }

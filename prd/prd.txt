@@ -1,0 +1,1387 @@
+
+   FlowERP   
+
+From Demand to Delivery
+
+Product Requirements Document
+
+Hackathon Edition  ·  v1.0  ·  2025
+
+
+
+Mini ERP: From Demand to Delivery — Odoo Hackathon Challenge
+ 
+
+
+  01    PRODUCT VISION
+
+1.1  Product Identity
+Product Name
+FlowERP
+Tagline
+From Demand to Delivery — One System. Zero Gaps.
+Version
+1.0 — Hackathon Release
+Domain
+Manufacturing ERP / SME Operations
+Target Market
+Small & Mid-size Manufacturing Companies
+Inspired By
+Odoo, SAP Fiori, Linear, Stripe Dashboard
+
+1.2  Elevator Pitch
+FlowERP is a modern, role-based Mini ERP platform that digitally orchestrates the complete manufacturing lifecycle — from the moment a customer places an order to the instant finished goods are delivered. By unifying Products, Sales, Procurement, Manufacturing, and Inventory into a single, real-time system, FlowERP eliminates the spreadsheet chaos, WhatsApp coordination, and stock blindness that cripple growing businesses like Shiv Furniture Works.
+
+1.3  Problem Statement
+Growing manufacturing companies operate across 5+ disconnected tools: Excel inventory sheets, WhatsApp-based purchase requests, paper BoMs, manual stock registers, and verbal work-order assignments. This creates four critical failure modes:
+Sales teams oversell — committing stock that doesn't exist or isn't available
+Procurement fires late — purchase orders placed only after production halts
+Manufacturing operates blind — operators don't know what to build or in what sequence
+Management has zero visibility — no live KPIs, no pending order alerts, no shortage warnings
+
+1.4  Why This Matters
+A single missed delivery costs a furniture company 3–8% of annual customer lifetime value. Stock mismatches cause 23% production downtime on average in SME manufacturing. Procurement delays add 2–4 weeks to lead times. FlowERP solves all three simultaneously.
+
+1.5  Target Users
+User Role
+Primary Module
+Key Need
+Business Owner / Admin
+Dashboard + Reports
+Real-time business visibility
+Inventory Manager
+Products + Stock Ledger
+Accurate stock levels
+Sales Manager
+Sales Orders
+Confirm orders without overselling
+Manufacturing Operator
+Manufacturing Orders
+Clear work queue and BoMs
+Purchase Manager
+Purchase Orders
+Timely procurement with vendor data
+
+1.6  Business Impact
+Metric
+Before FlowERP
+After FlowERP
+Stock accuracy
+~60% (manual)
+~99% (real-time)
+Procurement lead time
+Reactive (days late)
+Proactive (auto-triggered)
+Order fulfillment visibility
+None
+Live dashboard
+Manufacturing clarity
+Paper notes
+Work orders with status
+Audit trail
+None
+Full immutable log
+ 
+
+
+  02    CORE USER PERSONAS
+
+👔  Business Owner / Admin
+Goals
+Complete real-time visibility of all operations
+Prevent delivery delays and customer churn
+Make data-driven stocking and pricing decisions
+Pain Points
+No single source of truth — data scattered across tools
+Learns about stockouts only after customer complaints
+Cannot track manufacturing progress or delays
+Key Actions in FlowERP
+View executive dashboard with live KPIs
+Access full audit logs and reports
+Manage users and access rights
+Override system states in edge cases
+
+📦  Inventory Manager
+Goals
+Maintain accurate on-hand, reserved, and free-to-use quantities
+Ensure zero stock discrepancy between physical and digital
+Receive early-warning alerts on low stock
+Pain Points
+Manual stock registers create discrepancies within hours
+No visibility into what is reserved vs available
+Stock consumed by manufacturing goes untracked
+Key Actions in FlowERP
+Monitor live inventory dashboard
+Adjust stock quantities with audit reason
+View stock ledger movement per product
+Receive low-stock alert notifications
+
+💼  Sales Manager
+Goals
+Confirm customer orders only when stock or procurement is viable
+Track order delivery status in real-time
+Avoid customer escalations from delayed deliveries
+Pain Points
+Confirms orders without checking stock, causing delivery failures
+No view into procurement or manufacturing status affecting orders
+Cannot identify which orders are partially vs fully delivered
+Key Actions in FlowERP
+Create and confirm sales orders with stock check
+View reserved vs free-to-use quantities before confirming
+Trigger procurement if MTO product is short
+Mark deliveries as partial or complete
+
+🔧  Manufacturing Operator
+Goals
+Clear, prioritized work queue
+Know exact components needed before starting production
+Log work order completion without paperwork
+Pain Points
+No visibility into work queue — relies on verbal instructions
+BoMs maintained on paper, leading to wrong quantities
+Stock consumed manually without system update
+Key Actions in FlowERP
+View assigned manufacturing orders
+Check component availability before starting
+Execute work orders step by step
+Mark MO complete — triggering automatic stock updates
+
+🛒  Purchase Manager
+Goals
+Never run out of raw materials
+Maintain vendor relationships with structured PO history
+Receive automated reorder triggers before stockouts occur
+Pain Points
+Receives urgent WhatsApp requests for materials already out of stock
+No structured vendor database or PO history
+Cannot forecast procurement needs proactively
+Key Actions in FlowERP
+Receive auto-triggered purchase orders from MTO/low-stock rules
+Confirm and track PO status through to receipt
+Receive goods and see stock auto-updated
+Review procurement history and vendor performance
+
+ 
+
+
+  03    END-TO-END BUSINESS WORKFLOW
+
+3.1  Complete Workflow Narrative
+FlowERP orchestrates one continuous, inventory-centric business cycle. Every module affects stock. The entire system revolves around a single fundamental formula:
+
+Free-to-Use Qty  =  On-Hand Qty  −  Reserved Qty
+
+3.2  Step-by-Step Workflow
+Step
+Action
+Module
+Stock Impact
+1
+Create Product with price, cost, stock, and procurement config (MTS/MTO)
+Products
+Sets baseline On-Hand Qty
+2
+Configure BoM — list components, quantities, operations, work centers
+Manufacturing / BoM
+No change yet
+3
+Customer places order → Sales Order created (Draft)
+Sales
+No change yet
+4
+Sales Order Confirmed → Stock availability check triggers
+Sales
+Qty moves to Reserved
+5a
+MTS: Sufficient stock → Order reserved, awaits delivery
+Sales + Inventory
+Reserved increases
+5b
+MTO / Shortage detected → Procurement trigger fires automatically
+Procurement Engine
+Pending PO/MO created
+6a
+Procurement = Purchase → Purchase Order auto-created for shortage qty
+Purchase
+Awaiting receipt
+6b
+Procurement = Manufacture → Manufacturing Order auto-created for shortage qty
+Manufacturing
+Components reserved
+7
+Manufacturing Order → System fetches BoM → Work Orders generated
+Manufacturing
+Components reserved
+8
+Operators execute Work Orders (Assembly → Painting → Packing)
+Manufacturing
+Work in progress
+9
+MO Completed → Components deducted, Finished Goods added to On-Hand
+Manufacturing + Inventory
+Net stock update
+10
+Purchase Order Received (partial or full) → On-Hand increases
+Purchase + Inventory
+On-Hand increases
+11
+Sales Order Delivered (partial or full) → On-Hand decreases
+Sales + Inventory
+On-Hand decreases
+12
+Every state change written to Audit Log with timestamp, user, before/after values
+Audit Logs
+Immutable record
+
+3.3  MTS vs MTO Decision Logic
+Scenario
+Strategy
+System Action
+Order qty ≤ Free-to-Use qty
+MTS
+Reserve stock, proceed to delivery
+Order qty > Free-to-Use qty, product is MTO + Manufacture
+MTO
+Auto-create Manufacturing Order for shortage qty
+Order qty > Free-to-Use qty, product is MTO + Purchase
+MTO
+Auto-create Purchase Order for shortage qty
+Order qty > Free-to-Use qty, product is MTS
+MTS deficit
+Alert user, suggest manual procurement
+
+3.4  Stock Ledger Movement Summary
+Event
+Module
+Stock Effect
+Sales Order Confirmed
+Sales
+−Reserved (committed)
+Sales Order Delivered
+Sales + Inventory
+−On-Hand
+Purchase Order Received
+Purchase + Inventory
++On-Hand
+Manufacturing Order Started
+Manufacturing
+−Component Reserved
+Manufacturing Order Completed
+Manufacturing + Inventory
+−Components On-Hand, +Finished Goods On-Hand
+Manual Adjustment
+Inventory
+±On-Hand with reason code
+ 
+
+
+  04    FEATURE PRIORITIZATION
+
+4.1  Priority Classification
+Features are classified into three tiers based on hackathon impact, compliance with problem statement, and judge impressiveness. P0 features must be demo-ready. P1 features differentiate the solution. P2 features are implemented only if time permits.
+
+Feature
+Classification
+Priority
+User Authentication with Role-Based Access Control
+Must Have
+P0
+Product CRUD with MTS/MTO procurement config
+Must Have
+P0
+Inventory: On-Hand, Reserved, Free-to-Use quantities
+Must Have
+P0
+Sales Order lifecycle (Draft → Confirmed → Delivered)
+Must Have
+P0
+Stock reservation on Sales Order confirmation
+Must Have
+P0
+Purchase Order lifecycle (Draft → Confirmed → Received)
+Must Have
+P0
+Bill of Materials (BoM) creation and management
+Must Have
+P0
+Manufacturing Order lifecycle with Work Orders
+Must Have
+P0
+Auto stock deduction on MO completion (components)
+Must Have
+P0
+Auto stock addition on MO completion (finished goods)
+Must Have
+P0
+Auto stock addition on PO receipt
+Must Have
+P0
+Procurement Automation — MTO trigger on SO confirmation
+Must Have
+P0
+Stock Ledger / Audit Trail for every movement
+Must Have
+P0
+Executive Dashboard with live KPIs
+Must Have
+P0
+Partial delivery and partial receipt workflows
+Should Have
+P1
+Low-stock threshold alerts on dashboard
+Should Have
+P1
+Work Center management
+Should Have
+P1
+Operations with duration on BoM
+Should Have
+P1
+Per-module role-based view restrictions
+Should Have
+P1
+Procurement history report
+Should Have
+P1
+Sales order analytics chart
+Should Have
+P1
+Inventory movement history per product
+Should Have
+P1
+AI: Smart reorder quantity suggestion
+Nice To Have
+P2
+AI: Demand forecasting from SO history
+Nice To Have
+P2
+AI: Natural language audit log search
+Nice To Have
+P2
+Multi-vendor support per product
+Nice To Have
+P2
+PDF export for Sales/Purchase Orders
+Nice To Have
+P2
+Email notification on PO / MO auto-creation
+Nice To Have
+P2
+ 
+
+
+  05    DETAILED MODULE SPECIFICATIONS
+
+5.1  Authentication & RBAC
+Purpose
+Secure the system via JWT-based login with role-based access. Each user has exactly one role that determines which modules are visible and editable.
+User Stories
+As a user, I can log in with email and password so I can access my permitted modules
+As an Admin, I can create users and assign roles
+As a Sales User, I can only see the Sales module and Dashboard
+Business Rules
+Roles: Admin, Sales User, Purchase User, Manufacturing User, Inventory Manager, Business Owner
+JWT access token expires in 8 hours; refresh token in 7 days
+Admin has unrestricted access to all modules including Audit Logs
+Non-admin users cannot see Audit Logs or User Management
+Failed login attempts ≥5 lock account for 15 minutes
+Validation Rules
+Email must be valid format and unique
+Password minimum 8 characters
+Role must be one of the defined enum values
+Token must be validated on every protected API request
+Edge Cases
+Admin deletes their own account → system must block if they are the last Admin
+User role changed mid-session → frontend must re-fetch permissions on next navigation
+UI Requirements
+Clean login card: logo, email, password, Login CTA — no clutter
+Role badge displayed in user avatar dropdown
+Forbidden module navigation shows a 403 empty state, not a broken page
+
+5.2  Executive Dashboard
+Purpose
+The first screen judges see. Delivers real-time operational KPIs across all modules in a premium, information-dense layout that communicates business health instantly.
+User Stories
+As a Business Owner, I see live KPIs for Sales, Purchase, Manufacturing, and Inventory on one screen
+As an Inventory Manager, I see low-stock alerts immediately on the dashboard
+Business Rules
+KPI cards refresh every 30 seconds or on manual refresh
+Low-stock threshold is configurable per product (default: 10 units)
+Manufacturing orders delayed beyond scheduled date are flagged as red
+Validation Rules
+All counts must be real-time from DB, not cached older than 30 seconds
+Edge Cases
+No data state: dashboard shows skeleton cards with setup prompts
+All modules empty: show a demo seeder prompt for judges
+UI Requirements
+6 KPI cards in 3×2 grid: Total SOs, Pending Deliveries, Total POs, Pending Receipts, Active MOs, Low Stock Alerts
+Inventory health bar chart: On-Hand vs Reserved per top 5 products
+Manufacturing progress ring chart: Draft / In-Progress / Completed MOs
+Procurement alerts table: top 5 most critical low-stock products
+Recent activity feed: last 10 audit log entries
+Order analytics: 7-day SO and PO creation trend line chart
+
+5.3  Products Module
+Purpose
+Central catalog of all products. Each product carries pricing, stock quantities, and procurement configuration that drives the entire ERP flow.
+User Stories
+As an Admin/Owner, I can create products with sales price, cost, and procurement config
+As an Inventory Manager, I can view on-hand, reserved, and free-to-use quantities per product
+As a Sales Manager, I can see free-to-use quantity before confirming an order
+Business Rules
+Free-To-Use Qty = On-Hand Qty − Reserved Qty (computed, never stored)
+Procurement Type: Purchase (uses vendor) or Manufacturing (uses BoM)
+A product can only be deleted if it has no open Sales Orders, Purchase Orders, or Manufacturing Orders
+Product linked to a BoM is classified as a 'Manufactured' product
+Validation Rules
+Sales Price and Cost Price must be positive decimals
+On-Hand Qty must be non-negative integer
+Procurement Type required if 'Procure on Demand' is enabled
+If Procurement Type = Purchase, Vendor field becomes required
+If Procurement Type = Manufacturing, BoM must exist for the product
+Edge Cases
+Product has zero stock and open SOs — deletion blocked with message
+BoM deleted while product references it — product's procurement type must reset
+UI Requirements
+Product list: searchable, filterable by category and procurement type
+Product detail panel (side drawer) shows live stock quantities with color-coded health bar
+Inline edit for price fields
+Stock quantity displayed as three chips: On-Hand (blue), Reserved (amber), Free (green)
+
+5.4  Inventory Module
+Purpose
+Tracks every stock movement with a full ledger. Provides manual adjustment capability with reason codes. Acts as the system of record for all quantity changes.
+User Stories
+As an Inventory Manager, I can view the complete stock ledger with source references
+As an Admin, I can manually adjust stock quantities with a reason code
+Business Rules
+Every stock change (from any module) writes a Stock Ledger entry
+Ledger entry includes: product, date, qty_before, qty_change, qty_after, source_module, source_ref, user
+Manual adjustments require a reason text (min 10 characters)
+Validation Rules
+Manual adjustment qty cannot bring On-Hand below zero
+Reason code is mandatory for manual adjustments
+Edge Cases
+Adjustment that would make On-Hand negative → blocked with warning
+UI Requirements
+Stock ledger as a filterable, paginated table (filter by product, date range, source module)
+Manual adjustment modal with product selector, qty (+/−), and reason field
+Per-product stock history drawer with timeline visualization
+
+5.5  Sales Orders
+Purpose
+Manages customer demand. Drives stock reservation and procurement triggers. Primary entry point for the MTS/MTO decision logic.
+User Stories
+As a Sales Manager, I can create a Sales Order with customer and product lines
+As a Sales Manager, I can confirm an order which reserves stock and triggers procurement if needed
+As a Sales Manager, I can mark an order as delivered (partial or full)
+Business Rules
+States: Draft → Confirmed → Partially Delivered → Fully Delivered | Cancelled
+On Confirm: system checks Free-to-Use Qty per line item
+If Free-to-Use Qty ≥ ordered qty: reserve stock (MTS path)
+If Free-to-Use Qty < ordered qty and product is MTO: trigger procurement for shortage qty
+Cancelled orders release reserved stock
+Delivered orders permanently reduce On-Hand
+Validation Rules
+At least one order line required
+Ordered qty must be positive integer
+Customer name is required
+Cannot confirm a Cancelled order
+Edge Cases
+Product deleted after SO confirmed → SO line shows 'Product Archived' warning
+Partial delivery on multi-line order — each line has its own delivery status
+UI Requirements
+SO list with status badges (color-coded), search, date filter
+SO detail page: header info + line items table + procurement action panel
+Inline delivery input: 'Deliver X of Y' per line
+Procurement trigger result shown as dismissible toast: 'PO/MO auto-created for 15 units'
+
+5.6  Purchase Orders
+Purpose
+Manages vendor-based stock replenishment. Can be manually created or auto-generated by the procurement engine.
+User Stories
+As a Purchase Manager, I can create and confirm Purchase Orders
+As a Purchase Manager, I can receive goods (partial or full) and see stock update automatically
+Business Rules
+States: Draft → Confirmed → Partially Received → Fully Received | Cancelled
+On Full/Partial Receipt: On-Hand Qty increases by received quantity
+Auto-created POs are linked to the originating Sales Order via source_so_id
+Cancelled POs do not affect stock
+Validation Rules
+At least one PO line required
+Received qty cannot exceed ordered qty
+Vendor field required on confirmation
+Edge Cases
+Goods received exceeding ordered qty → system warns, prevents receipt above ordered qty
+UI Requirements
+PO list showing auto-created badge for system-generated orders
+PO detail with receive goods action (inline qty input per line)
+Vendor dropdown with quick-add capability
+
+5.7  Bill of Materials (BoM)
+Purpose
+Defines the recipe for manufactured products — what components are needed, in what quantities, and what operations transform them into finished goods.
+User Stories
+As a Manufacturing Manager, I can create a BoM for a product with components and quantities
+As a Manufacturing Operator, I can view the BoM to understand what I need before starting production
+Business Rules
+A product can have only one active BoM
+BoM components are validated against the Products catalog
+Operations define the steps in sequence (Assembly, Painting, Packing, etc.)
+Each operation has a Work Center and estimated duration
+Validation Rules
+Finished product field required
+At least one component required
+Component qty must be positive
+A product cannot be both a finished good and a component of its own BoM (circular reference)
+Edge Cases
+Circular BoM reference (product A uses product A as component) → system must detect and block
+UI Requirements
+BoM builder with drag-to-reorder component lines
+Operations section with work center dropdown and duration input
+Preview of BoM cost (sum of component costs × quantities)
+
+5.8  Manufacturing Orders
+Purpose
+Converts raw material components into finished goods using BoM-driven work orders. Core production tracking module.
+User Stories
+As a Manufacturing Manager, I can create a Manufacturing Order for a product and quantity
+As an Operator, I can view and execute my work orders step by step
+As a Manager, I can mark an MO complete and see stock auto-update
+Business Rules
+States: Draft → In Progress → Completed | Cancelled
+On Create: system fetches BoM and generates component list and work orders
+On Start: component stock is reserved
+On Complete: components deducted from On-Hand, finished goods added to On-Hand
+Auto-created MOs are linked to originating Sales Order via source_so_id
+Validation Rules
+Product must have an active BoM to create an MO
+Quantity must be positive
+Cannot complete MO if component stock is insufficient
+Edge Cases
+Insufficient components on MO start → warning with shortage detail, operator can still proceed with override
+MO cancelled after components reserved → reservation released
+UI Requirements
+Kanban-style MO board: Draft / In Progress / Completed columns
+MO detail: progress bar showing work order completion (e.g., 2/3 steps done)
+Work order execution timeline with start/complete buttons
+Component checklist with available vs required quantities
+
+5.9  Procurement Automation Engine
+Purpose
+The intelligence layer that automatically creates Purchase Orders or Manufacturing Orders when a Sales Order confirms and a shortage is detected, implementing MTO strategy without manual intervention.
+User Stories
+As a Sales Manager, when I confirm an MTO order with insufficient stock, the system auto-creates a PO or MO
+As a Purchase Manager, I can see auto-created POs flagged distinctly from manual ones
+Business Rules
+Procurement trigger fires synchronously on Sales Order confirmation
+Shortage qty = Ordered Qty − Free-to-Use Qty (only positive shortages trigger procurement)
+Procurement Type on product determines whether PO or MO is auto-created
+Auto-created orders appear with source_type = 'auto' and source_so_id reference
+One trigger per order line (not one per order)
+Validation Rules
+Product must have Procure on Demand = true for auto-trigger to fire
+Procurement Type must be set before auto-trigger can execute
+Edge Cases
+Two order lines for same product on one SO → procurement calculated per line, consolidated into one PO/MO
+UI Requirements
+Procurement trigger result shown as real-time banner on SO confirmation
+Auto-created orders show 'Auto-Generated' badge with link to source SO
+
+5.10  Audit Logs
+Purpose
+Immutable, comprehensive log of every significant system event. Provides full traceability for compliance, debugging, and business review.
+User Stories
+As an Admin, I can see a searchable, filterable log of all system events
+As a Business Owner, I can see who changed what and when
+Business Rules
+Audit log entries are append-only (never updated or deleted)
+Log entry schema: id, timestamp, user_id, user_name, module, action, entity_id, entity_type, field_changed, old_value, new_value, ip_address
+Events logged: all CRUD operations, status transitions, stock adjustments, login/logout, procurement triggers
+Validation Rules
+Log entries cannot be deleted or modified via any API
+Edge Cases
+System crash during log write → transaction must be atomic (log + original action both succeed or both fail)
+UI Requirements
+Full-width filterable table: filter by module, action, user, date range
+Search by entity ID or description
+Color-coded action badges: CREATE (green), UPDATE (blue), DELETE (red), STATUS_CHANGE (amber)
+Export to CSV for Admin users
+
+ 
+
+
+  06    DATABASE DESIGN
+
+6.1  Core Tables
+Table
+Primary Key
+Key Fields
+Relationships
+users
+id (UUID)
+email, password_hash, role, is_active, created_at
+→ audit_logs
+products
+id (UUID)
+name, sku, sales_price, cost_price, on_hand_qty, reserved_qty, procure_on_demand, procurement_type, vendor_id, uom
+→ bom, purchase_order_lines, so_lines, mo_lines
+vendors
+id (UUID)
+name, email, phone, address, is_active
+→ products, purchase_orders
+boms
+id (UUID)
+product_id, name, qty, uom, is_active, created_by
+→ bom_lines, bom_operations, products
+bom_lines
+id (UUID)
+bom_id, component_product_id, qty, uom
+→ boms, products
+bom_operations
+id (UUID)
+bom_id, name, work_center_id, duration_mins, sequence
+→ boms, work_centers
+work_centers
+id (UUID)
+name, code, capacity, is_active
+→ bom_operations, work_orders
+sales_orders
+id (UUID)
+so_number, customer_name, status, total_amount, created_by, confirmed_at, delivered_at
+→ so_lines, audit_logs
+so_lines
+id (UUID)
+so_id, product_id, ordered_qty, reserved_qty, delivered_qty, unit_price
+→ sales_orders, products
+purchase_orders
+id (UUID)
+po_number, vendor_id, status, source_type, source_so_id, total_amount, created_by
+→ po_lines, vendors, audit_logs
+po_lines
+id (UUID)
+po_id, product_id, ordered_qty, received_qty, unit_cost
+→ purchase_orders, products
+manufacturing_orders
+id (UUID)
+mo_number, product_id, qty, status, source_type, source_so_id, bom_id, assignee_id, scheduled_date
+→ mo_components, work_orders, products, boms
+mo_components
+id (UUID)
+mo_id, product_id, required_qty, consumed_qty
+→ manufacturing_orders, products
+work_orders
+id (UUID)
+mo_id, operation_name, work_center_id, duration_mins, status, sequence, started_at, completed_at
+→ manufacturing_orders, work_centers
+stock_ledger
+id (UUID)
+product_id, date, qty_before, qty_change, qty_after, source_module, source_ref_id, source_ref_type, user_id, notes
+→ products, users
+audit_logs
+id (UUID)
+timestamp, user_id, module, action, entity_type, entity_id, field_changed, old_value, new_value, ip_address
+→ users
+
+6.2  Key Constraints & Indexes
+products.sku — UNIQUE NOT NULL
+products.on_hand_qty — CHECK (on_hand_qty >= 0)
+products.reserved_qty — CHECK (reserved_qty >= 0)
+boms — UNIQUE (product_id) where is_active = true (one active BoM per product)
+bom_lines — no self-reference: component_product_id ≠ bom.product_id
+stock_ledger — append-only enforced at application layer (no UPDATE/DELETE exposed in API)
+audit_logs — append-only enforced at application layer
+INDEX on: sales_orders(status), purchase_orders(status), manufacturing_orders(status), stock_ledger(product_id, date), audit_logs(module, timestamp)
+
+6.3  Computed / Derived Values
+Value
+Formula
+How Maintained
+Free-to-Use Qty
+on_hand_qty − reserved_qty
+Computed on read, never stored
+SO Total Amount
+SUM(line.qty × line.unit_price)
+Computed on read
+PO Total Amount
+SUM(line.qty × line.unit_cost)
+Computed on read
+BoM Cost Estimate
+SUM(component.qty × product.cost_price)
+Computed on read
+MO Progress %
+(completed_work_orders / total_work_orders) × 100
+Computed on read
+ 
+
+
+  07    API DESIGN (REST)
+
+Base URL: /api/v1  |  Auth: Bearer JWT in Authorization header  |  Content-Type: application/json
+
+7.1  Authentication
+POST  /auth/login
+Authenticate user and receive JWT tokens
+Request:
+{ "email": "string", "password": "string" }
+Response:
+{ "access_token": "jwt", "refresh_token": "jwt", "user": { "id", "name", "role" } }
+POST  /auth/refresh
+Refresh access token using refresh token
+Request:
+{ "refresh_token": "string" }
+Response:
+{ "access_token": "jwt" }
+POST  /auth/logout
+Invalidate refresh token
+Request:
+{ "refresh_token": "string" }
+Response:
+{ "message": "Logged out" }
+
+7.2  Products
+GET  /products
+List all products with stock quantities
+Request:
+Query: ?search=&type=&page=&limit=
+Response:
+{ "data": [{ "id", "name", "sku", "on_hand_qty", "reserved_qty", "free_to_use_qty", ... }], "total" }
+POST  /products
+Create a new product
+Request:
+{ "name", "sku", "sales_price", "cost_price", "on_hand_qty", "procurement_type", "procure_on_demand", "vendor_id?" }
+Response:
+{ "data": { product } }
+PUT  /products/:id
+Update product details or procurement config
+Request:
+{ "name?", "sales_price?", "cost_price?", "procure_on_demand?", ... }
+Response:
+{ "data": { product } }
+DELETE  /products/:id
+Soft-delete product (blocks if open orders exist)
+Request:
+—
+Response:
+{ "message": "Deleted" } | 409 Conflict with reason
+
+7.3  Sales Orders
+GET  /sales-orders
+List sales orders with status filter
+Request:
+Query: ?status=&page=&limit=
+Response:
+{ "data": [{ so }], "total" }
+POST  /sales-orders
+Create a sales order in Draft state
+Request:
+{ "customer_name", "lines": [{ "product_id", "qty", "unit_price" }] }
+Response:
+{ "data": { so } }
+POST  /sales-orders/:id/confirm
+Confirm SO — reserves stock, triggers procurement if MTO
+Request:
+—
+Response:
+{ "data": { so }, "procurement_actions": [{ "type": "PO|MO", "id", "product_id", "qty" }] }
+POST  /sales-orders/:id/deliver
+Mark partial or full delivery
+Request:
+{ "lines": [{ "so_line_id", "delivered_qty" }] }
+Response:
+{ "data": { so } }
+POST  /sales-orders/:id/cancel
+Cancel SO and release reserved stock
+Request:
+—
+Response:
+{ "data": { so } }
+
+7.4  Purchase Orders
+GET  /purchase-orders
+List POs with optional source filter
+Request:
+Query: ?status=&source_type=auto|manual
+Response:
+{ "data": [{ po }], "total" }
+POST  /purchase-orders
+Create a PO manually
+Request:
+{ "vendor_id", "lines": [{ "product_id", "qty", "unit_cost" }] }
+Response:
+{ "data": { po } }
+POST  /purchase-orders/:id/confirm
+Confirm PO
+Request:
+—
+Response:
+{ "data": { po } }
+POST  /purchase-orders/:id/receive
+Receive goods — updates On-Hand and Stock Ledger
+Request:
+{ "lines": [{ "po_line_id", "received_qty" }] }
+Response:
+{ "data": { po }, "stock_updates": [{ "product_id", "qty_added" }] }
+
+7.5  Manufacturing Orders
+GET  /manufacturing-orders
+List MOs
+Request:
+Query: ?status=&page=
+Response:
+{ "data": [{ mo }], "total" }
+POST  /manufacturing-orders
+Create MO — fetches BoM and builds component list
+Request:
+{ "product_id", "qty", "scheduled_date?" }
+Response:
+{ "data": { mo, work_orders, components } }
+POST  /manufacturing-orders/:id/start
+Start MO — reserves components
+Request:
+—
+Response:
+{ "data": { mo } }
+POST  /manufacturing-orders/:id/work-orders/:wo_id/complete
+Complete a work order step
+Request:
+—
+Response:
+{ "data": { work_order } }
+POST  /manufacturing-orders/:id/complete
+Complete MO — deducts components, adds finished goods
+Request:
+—
+Response:
+{ "data": { mo }, "stock_updates": [...] }
+
+7.6  Audit Logs
+GET  /audit-logs
+Paginated, filtered audit log query (Admin only)
+Request:
+Query: ?module=&action=&user_id=&from=&to=&page=
+Response:
+{ "data": [{ "id", "timestamp", "user_name", "module", "action", "entity_type", "entity_id", "field_changed", "old_value", "new_value" }], "total" }
+GET  /audit-logs/export
+Export filtered audit logs as CSV (Admin only)
+Request:
+Query: same as above
+Response:
+CSV file download
+ 
+
+
+  08    DASHBOARD DESIGN
+
+8.1  KPI Cards — Row 1
+Card
+Value
+Trend
+Color
+Why It Matters
+Total Sales Orders
+Live count of all SOs
+↑/↓ vs yesterday
+Blue
+Primary revenue health indicator
+Pending Deliveries
+Confirmed SOs not yet fully delivered
+Days oldest pending
+Amber
+Customer SLA risk
+Total Purchase Orders
+All POs (manual + auto)
+Auto-created %
+Teal
+Procurement activity
+
+8.2  KPI Cards — Row 2
+Card
+Value
+Trend
+Color
+Why It Matters
+Active Manufacturing Orders
+MOs in Draft + In Progress
+Overdue flag
+Purple
+Production pipeline health
+Low Stock Alerts
+Products below threshold
+Critical count
+Red
+Stockout risk
+Procurement Auto-Triggers
+MTO triggers fired today
+Total this week
+Green
+Automation effectiveness
+
+8.3  Charts & Widgets
+Widget
+Type
+Data
+Insight
+Inventory Health
+Horizontal bar chart
+On-Hand vs Reserved for top 10 products
+Instantly spot dangerously reserved products
+MO Pipeline
+Donut chart
+Draft / In Progress / Completed MO counts
+Understand manufacturing throughput
+Order Trend (7-day)
+Line chart (dual series)
+SO and PO counts per day
+Spot demand and procurement patterns
+Stock Movement
+Stacked area chart
+Daily stock in vs stock out
+Visualize inventory flow velocity
+Procurement Alerts
+Priority table
+Top 5 low-stock products with reorder suggestion
+Immediate actionable list
+Recent Activity Feed
+Timeline list
+Last 10 audit log events with icons
+System heartbeat — shows judges everything is connected
+ 
+
+
+  09    AI FEATURES
+
+9.1  Smart Reorder Quantity Advisor
+On any product detail page, an AI button analyzes the product's 90-day SO history and current stock trends to recommend an optimal reorder quantity and frequency. Implementation: send SO history array to Claude API with a prompt asking for reorder recommendation in JSON format. Response displayed as a suggestion card with reasoning.
+Wow factor: judges see AI actively analyzing their own demo data
+Implementation: ~40 lines of code — fetch SO history → call Claude API → parse JSON response → display card
+Demo moment: create multiple SOs for Wooden Tables, then click 'Get AI Reorder Suggestion' and watch it recommend restocking 25 units based on weekly demand of ~5
+
+9.2  Natural Language Audit Log Search
+In the Audit Logs module, instead of using complex filters, the user types a plain-English question: 'Who changed the Wooden Table price last week?' or 'Show me all auto-procurement triggers for Dining Tables.' The system sends the query + recent log data to Claude API which returns the matching entries.
+Wow factor: turns a boring log table into an intelligent business intelligence tool
+Implementation: capture input → send to Claude with log schema context → parse returned filter criteria → apply to log query
+Demo moment: type 'Show me everything that happened when we confirmed Sales Order #1' and watch the system surface the entire chain of events
+
+9.3  AI Manufacturing Load Planner
+When a Manufacturing Order is created, an AI panel suggests the optimal scheduling — which work center to assign, estimated completion time based on current MO queue, and whether procurement needs to happen before the MO can start. Implementation: send current MO queue and component availability to Claude API with a scheduling prompt.
+Wow factor: shows AI as a proactive business advisor, not just a chatbot
+Implementation: ~50 lines — fetch active MO queue + component stock → call Claude API → display scheduling recommendation
+Demo moment: create an MO for 15 Dining Tables and let AI say 'Assembly line is at 80% capacity — recommend scheduling for Wednesday, but note that you are 5 Wooden Tops short — trigger procurement now'
+ 
+
+
+  10    DEMO SCENARIO — SHIV FURNITURE WORKS
+
+10.1  Setup (Pre-Demo, 2 minutes)
+Create 3 products: Wooden Table (MTO+Manufacture, stock=5), Wooden Chair (MTS, stock=50), Office Chair (MTO+Purchase, stock=2)
+Create BoM for Wooden Table: 4 Wooden Legs, 1 Wooden Top, 12 Screws + Operations: Assembly (60 min), Painting (30 min), Packing (20 min)
+Create vendor: Prime Wood Suppliers
+
+10.2  Demo Flow (Live, ~8 minutes)
+Step
+Action
+Wow Moment
+1
+Show Dashboard → clean, live KPIs. Point to 'Low Stock: Wooden Table = 5 units'
+First impression: premium, enterprise-grade UI
+2
+Go to Sales → Create SO for 20 Wooden Tables (stock = 5, shortage = 15)
+Judges lean forward: 'what happens?'
+3
+Confirm SO → System shows toast: 'Auto-created Manufacturing Order MO-001 for 15 Wooden Tables'
+WOW: full automation in one click
+4
+Navigate to Manufacturing → MO-001 visible with Draft status, source linked to SO-001
+Shows end-to-end traceability
+5
+Start MO → Components reserved. Show component checklist (need 60 Legs, 15 Tops, 180 Screws)
+Clarity operators never had before
+6
+Execute Work Orders: Assembly → Painting → Packing (one click each)
+Kanban board in action
+7
+Complete MO → Dashboard instantly updates: Wooden Tables on-hand = 20, components deducted
+Real-time inventory — no spreadsheet
+8
+Back to Sales Order → Deliver all 20 Wooden Tables → SO status: Fully Delivered
+Full cycle closed
+9
+Go to Audit Logs → Show the full chain: SO confirmed → MO auto-created → Components consumed → Goods produced → Delivered
+Immutable traceability
+10
+Click AI Reorder Advisor on Wooden Table → AI recommends 'Order 25 units weekly'
+AI cherry on top
+
+10.3  Backup Demo for Office Chair (MTO + Purchase path)
+Create SO for 10 Office Chairs (stock=2, shortage=8)
+Confirm → Auto-creates PO-001 for 8 Office Chairs from Prime Wood Suppliers
+Receive PO → Stock updates to 10 → Deliver SO
+Shows judges the Purchase path of procurement automation
+ 
+
+
+  11    ARCHITECTURE
+
+11.1  Frontend Architecture (React + TypeScript)
+Layer
+Technology
+Purpose
+Framework
+React 18 + TypeScript
+Component-driven UI with type safety
+Routing
+React Router v6
+Module-based client-side routing with RBAC guards
+State Management
+Zustand + React Query
+Global auth state + server state with caching
+UI Components
+Shadcn/ui + Tailwind CSS
+Premium component system with design tokens
+Charts
+Recharts
+Dashboard analytics visualizations
+Forms
+React Hook Form + Zod
+Validated forms with schema-driven rules
+HTTP Client
+Axios with interceptors
+JWT auto-attachment, 401 refresh, error handling
+Icons
+Lucide React
+Consistent, modern icon system
+
+11.2  Frontend Folder Structure
+src/
+  ├── components/          # Shared UI: Button, Modal, Table, Badge, KPICard
+  ├── modules/             # Feature modules (one folder per module)
+  │   ├── dashboard/       # Dashboard page + widgets
+  │   ├── products/        # Products list + detail drawer
+  │   ├── sales/           # SO list + detail + delivery
+  │   ├── purchase/        # PO list + receipt flow
+  │   ├── manufacturing/   # MO kanban + work orders
+  │   ├── bom/             # BoM builder
+  │   ├── inventory/       # Stock ledger + adjustments
+  │   └── audit/           # Audit log viewer + AI search
+  ├── store/               # Zustand auth store
+  ├── api/                 # Axios instance + API function modules
+  ├── hooks/               # Custom hooks (usePermission, useStock)
+  └── utils/               # formatters, validators, constants
+
+11.3  Backend Architecture (Node.js + Express)
+Layer
+Technology
+Purpose
+Runtime
+Node.js 20 + TypeScript
+Fast, typed async backend
+Framework
+Express.js
+Routing + middleware pipeline
+ORM
+Prisma ORM
+Type-safe DB queries + migrations
+Database
+PostgreSQL 15
+ACID-compliant relational data
+Auth
+JWT (jsonwebtoken) + bcrypt
+Secure authentication
+Validation
+Zod
+Request body validation
+Logging
+Morgan + Winston
+HTTP logs + application logs
+
+11.4  Backend Folder Structure
+src/
+  ├── routes/              # Express routers per module
+  ├── controllers/         # Request handlers (thin)
+  ├── services/            # Business logic (thick)
+  │   └── procurement.service.ts  # MTO trigger engine
+  ├── middleware/          # auth, rbac, errorHandler, auditLogger
+  ├── prisma/              # schema.prisma + migrations
+  └── utils/               # stockLedger.ts, computedFields.ts
+ 
+
+
+  12    DEVELOPMENT PLAN
+
+12.1  4-Member Team Split
+Member
+Role
+Owns
+Dev 1 — Backend Lead
+API + Business Logic
+Auth, Products, Inventory, Stock Ledger, Procurement Engine, Audit Logs
+Dev 2 — Backend
+Sales + Purchase + Manufacturing
+SO/PO/MO APIs, BoM, Work Orders, Auto-trigger
+Dev 3 — Frontend Lead
+Dashboard + Core UI
+Design system, Dashboard, Navigation, Products module
+Dev 4 — Frontend
+Module UIs
+Sales, Purchase, Manufacturing, BoM, Audit Log pages
+
+12.2  Recommended Build Order
+Phase
+Hours
+Deliverable
+Phase 1: Foundation
+0–4h
+DB schema, Auth API, login page, navigation shell, RBAC middleware
+Phase 2: Products + Inventory
+4–8h
+Products CRUD, stock quantity logic, stock ledger, inventory page
+Phase 3: Sales + Purchase
+8–14h
+SO and PO full lifecycle, stock reservation, receipt flow
+Phase 4: Manufacturing + BoM
+14–20h
+BoM builder, MO creation, work orders, MO complete with stock update
+Phase 5: Procurement Automation
+20–22h
+MTO trigger engine on SO confirm, auto PO/MO creation
+Phase 6: Dashboard + Polish
+22–26h
+All KPI cards, charts, recent activity feed, UI polish
+Phase 7: AI Features + Demo Prep
+26–28h
+1–2 AI features, seed demo data, rehearse demo flow
+ 
+
+
+  13    HACKATHON OPTIMIZATION
+
+13.1  Build These First (Maximum Judge Impact per Hour)
+Auth + Dashboard skeleton — judges form first impression in 10 seconds
+Products with live stock quantities — foundation for every other demo
+SO confirm with stock reservation — visible, satisfying behavior change
+Procurement auto-trigger — THE differentiator that no team will copy easily
+Manufacturing kanban + MO complete with stock update — visual, interactive, impressive
+
+13.2  Skip If Time Runs Short
+PDF export (P2) — nice but not demo-critical
+Email notifications (P2) — no judge will test this
+Multi-vendor support (P2) — single vendor per product is sufficient
+Work Center capacity management — basic work centers are enough
+Forgot password flow — not relevant for hackathon demo
+
+13.3  Demo-Day Insurance
+Seed script: one command populates all demo data (Shiv Furniture scenario)
+Demo user accounts: pre-created for each role to show RBAC live
+Fallback: if live demo breaks, have a recorded video backup
+Deploy to Vercel (frontend) + Railway (backend) the night before
+ 
+
+
+  14    ENTERPRISE UX STRATEGY
+
+14.1  Design Philosophy
+FlowERP must feel like a product that costs $200/month, not a hackathon project. The design language is inspired by Linear's command-driven efficiency, Stripe Dashboard's information density, and SAP Fiori's enterprise credibility — but lighter, faster, and more modern than any of them.
+
+14.2  Color Palette
+Token
+Hex
+Usage
+--color-brand
+#1A56DB
+Primary CTAs, active nav items, key accents
+--color-brand-light
+#EFF6FF
+Section backgrounds, hover states
+--color-surface
+#FFFFFF
+Card backgrounds
+--color-bg
+#F8FAFC
+Page background (off-white, not gray)
+--color-border
+#E2E8F0
+Dividers, table borders, input borders
+--color-text-primary
+#0F172A
+Headlines, labels
+--color-text-secondary
+#374151
+Body text
+--color-text-muted
+#6B7280
+Placeholders, timestamps
+--color-success
+#16A34A
+Delivered, completed, received statuses
+--color-warning
+#D97706
+Partial, pending statuses
+--color-danger
+#DC2626
+Cancelled, low stock, overdue
+--color-info
+#0EA5E9
+In progress, informational
+
+14.3  Typography
+Style
+Font
+Size
+Weight
+Usage
+Page Title
+Inter
+24px / 1.5rem
+700
+Module page headers
+Section Title
+Inter
+18px
+600
+Card titles, section labels
+Body
+Inter
+14px
+400
+All body text, table cells
+Caption
+Inter
+12px
+400
+Timestamps, helper text
+Code / SKU
+JetBrains Mono
+13px
+400
+Product codes, IDs, audit values
+KPI Number
+Inter
+32px
+700
+Dashboard KPI values
+
+14.4  Layout System
+Shell: fixed left sidebar (240px) + fixed topbar (56px) + scrollable main content
+Content max-width: 1200px centered, 24px horizontal padding
+Grid: 12-column CSS Grid for dashboard cards
+Spacing scale: 4px base unit — 4, 8, 12, 16, 24, 32, 48, 64px
+Card border-radius: 8px (cards), 6px (buttons), 4px (inputs, badges)
+Shadow: card uses shadow-sm (0 1px 3px rgba(0,0,0,0.08)) — not heavy drop shadows
+
+14.5  Component System
+Component
+Specification
+Status Badge
+Colored dot + text, pill shape, 6 variants: Draft/grey, Confirmed/blue, Partial/amber, Delivered/green, Cancelled/red, Auto/purple
+KPI Card
+White card, icon (top-right, muted), large number (32px bold), label (12px muted), trend delta (green/red arrow)
+Data Table
+Sticky header, alternating row shading, row hover (brand-light bg), pagination footer
+Side Drawer
+460px wide, slides from right, overlay backdrop, close on Esc, entity detail inside
+Confirmation Modal
+280px centered, destructive actions use red CTA
+Toast Notification
+Bottom-right, 4 variants (success/error/info/warning), auto-dismiss 4s, with action button
+Empty State
+Centered illustration, headline, subtext, optional CTA — never just 'No data'
+Loading State
+Skeleton shimmer (brand-light animated) — never a spinner for tables
+
+14.6  Navigation Structure
+Nav Item
+Icon
+Visible To
+Dashboard
+LayoutDashboard
+All roles
+Products
+Package
+Admin, Owner, Inventory Manager
+Inventory
+Warehouse
+Admin, Owner, Inventory Manager
+Sales Orders
+ShoppingCart
+Admin, Owner, Sales User
+Purchase Orders
+Truck
+Admin, Owner, Purchase User
+Manufacturing
+Factory
+Admin, Owner, Manufacturing User
+Bill of Materials
+ListTree
+Admin, Owner, Manufacturing User
+Audit Logs
+Shield
+Admin only
+Settings / Users
+Settings
+Admin only
+
+14.7  Animation Guidelines
+Page transitions: 150ms ease-out fade — fast enough to feel snappy
+Side drawer: 200ms slide-in from right with CSS transform
+Toast: 200ms slide-up from bottom-right
+Status badge change: 300ms color transition
+KPI card number: count-up animation on initial load (600ms)
+Table row: 100ms hover background transition
+NO: no parallax, no loading spinners, no skeleton for less than 200ms loads, no excessive animations
+
+14.8  Empty & Loading States
+State
+Design
+Products — empty
+Illustration of a box, 'No products yet', 'Add your first product' button
+Sales Orders — empty
+Illustration of a list, 'No orders yet', 'Create Sales Order' button
+Dashboard — no data
+Skeleton cards visible, 'Load demo data' CTA for judges
+Table — loading
+3 skeleton rows with shimmer animation, same height as real rows
+Detail drawer — loading
+Field-level skeleton blocks matching the real layout
+API error
+Inline error alert with retry button, never a blank page
+ 
+
+
+  15    WINNING STRATEGY
+
+15.1  Core Differentiators
+What Most Teams Build
+What FlowERP Delivers
+Generic CRUD forms for each module
+Interconnected modules where every action has a visible ripple effect
+Manual procurement only
+Full MTO auto-trigger: one SO confirm creates PO or MO automatically
+Basic status tracking
+Complete state machines with business rules enforced at every transition
+Simple stock counter
+Three-layer inventory: On-Hand / Reserved / Free-to-Use with live ledger
+Table-based dashboard with numbers
+Executive dashboard with live charts, alerts, and activity feed
+No AI features
+3 practical AI features that use demo data and produce visible, useful output
+Generic UI from a template
+Premium design system inspired by Linear/Stripe — immediately feels expensive
+No traceability
+Immutable audit log capturing the full chain from demand to delivery
+
+15.2  Judge Psychology
+First 10 seconds: the login page and dashboard must feel premium. Judges decide quality before a single click.
+The 'wow moment': the procurement auto-trigger on SO confirmation is your central demo hook. No other team will implement this correctly in a hackathon.
+The 'trust signal': showing the Audit Log chain after the demo proves the system is really connected end-to-end — not just faked screens.
+The 'smart team' signal': AI features show the team thinks beyond requirements — they build for the next level.
+Story over features: frame every demo step as 'what Shiv Furniture used to do vs what FlowERP does now.' Judges remember narratives, not feature lists.
+
+15.3  The One Sentence That Wins
+
+"With FlowERP, the moment Shiv Furniture confirms a customer order, the entire manufacturing and procurement chain moves — automatically, traceable, and in real-time."
+
+
+
+FlowERP PRD — Hackathon Edition
+Built for the Odoo Mini ERP: From Demand to Delivery Challenge

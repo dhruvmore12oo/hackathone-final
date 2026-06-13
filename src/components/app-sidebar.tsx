@@ -1,47 +1,61 @@
+import { SignInButton, UserButton, useAuth, useUser } from "@clerk/tanstack-react-start";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard, Package, Boxes, ShoppingCart, ClipboardList,
-  Factory, ListTree, Truck, ScrollText, Sparkles, Workflow,
+  Factory, ListTree, Truck, ScrollText, Sparkles, Workflow, Users,
 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { getCurrentUserProfile } from "@/lib/api/auth.functions";
+import { hasPermission } from "@/lib/auth/roles";
 
 const primary = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard },
-  { title: "Sales Orders", url: "/sales-orders", icon: ShoppingCart },
-  { title: "Manufacturing", url: "/manufacturing", icon: Factory },
-  { title: "Inventory", url: "/inventory", icon: Boxes },
-  { title: "Products", url: "/products", icon: Package },
+  { title: "Dashboard", url: "/", icon: LayoutDashboard, permission: "dashboard:read" },
+  { title: "Sales Orders", url: "/sales-orders", icon: ShoppingCart, permission: "sales:read" },
+  { title: "Manufacturing", url: "/manufacturing", icon: Factory, permission: "manufacturing:read" },
+  { title: "Inventory", url: "/inventory", icon: Boxes, permission: "inventory:read" },
+  { title: "Products", url: "/products", icon: Package, permission: "products:read" },
 ];
 const secondary = [
-  { title: "Purchase Orders", url: "/purchase-orders", icon: ClipboardList },
-  { title: "Bill of Materials", url: "/bom", icon: ListTree },
-  { title: "Vendors", url: "/vendors", icon: Truck },
-  { title: "Audit Logs", url: "/audit-logs", icon: ScrollText },
+  { title: "Purchase Orders", url: "/purchase-orders", icon: ClipboardList, permission: "purchase:read" },
+  { title: "Bill of Materials", url: "/bom", icon: ListTree, permission: "bom:read" },
+  { title: "Vendors", url: "/vendors", icon: Truck, permission: "vendors:read" },
+  { title: "Audit Logs", url: "/audit-logs", icon: ScrollText, permission: "audit_logs:read" },
+  { title: "Users & Roles", url: "/users", icon: Users, permission: "users:read" },
 ];
 
 export function AppSidebar() {
   const { state } = useSidebar();
+  const { isLoaded, isSignedIn } = useAuth();
+  const { user } = useUser();
+  const getCurrentUserProfileFn = useServerFn(getCurrentUserProfile);
+  const profileQuery = useQuery({
+    queryKey: ["current-user-profile"],
+    queryFn: () => getCurrentUserProfileFn(),
+    enabled: isLoaded && isSignedIn,
+    staleTime: 30000,
+  });
   const collapsed = state === "collapsed";
   const pathname = useRouterState({ select: (r) => r.location.pathname });
   const isActive = (p: string) => (p === "/" ? pathname === "/" : pathname.startsWith(p));
+  const role = profileQuery.data?.role;
+  const canSee = (permission: string) => role ? hasPermission(role, permission) : true;
+  const primaryItems = primary.filter((item) => canSee(item.permission));
+  const secondaryItems = secondary.filter((item) => canSee(item.permission));
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
-      <SidebarHeader className="border-b border-sidebar-border h-14 flex-row items-center px-4 gap-2">
-        <div className="size-7 rounded-md bg-gradient-to-br from-primary to-chart-5 flex items-center justify-center shrink-0">
-          <Workflow className="size-4 text-primary-foreground" />
+      <SidebarHeader className="border-b border-sidebar-border py-4 h-[72px] flex flex-row items-center px-4 overflow-hidden">
+        <div className={`flex items-center shrink-0 transition-all w-full`}>
+          <img src="/logo.png" alt="FlowERP Logo" className={`h-11 w-auto object-contain object-left ${collapsed ? "-ml-3" : ""}`} />
         </div>
-        {!collapsed && (
-          <div className="leading-tight">
-            <div className="text-sm font-semibold tracking-tight">FlowERP</div>
-            <div className="text-[10px] text-muted-foreground -mt-0.5">Demand → Delivery</div>
-          </div>
-        )}
       </SidebarHeader>
 
       <SidebarContent className="px-2 py-3">
@@ -49,7 +63,7 @@ export function AppSidebar() {
           {!collapsed && <SidebarGroupLabel className="text-[10px] uppercase tracking-wider text-muted-foreground/70">Operations</SidebarGroupLabel>}
           <SidebarGroupContent>
             <SidebarMenu>
-              {primary.map((item) => (
+              {primaryItems.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)} className="data-[active=true]:bg-sidebar-accent data-[active=true]:text-foreground">
                     <Link to={item.url} className="flex items-center gap-2.5">
@@ -67,7 +81,7 @@ export function AppSidebar() {
           {!collapsed && <SidebarGroupLabel className="text-[10px] uppercase tracking-wider text-muted-foreground/70">Supply Chain</SidebarGroupLabel>}
           <SidebarGroupContent>
             <SidebarMenu>
-              {secondary.map((item) => (
+              {secondaryItems.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)} className="data-[active=true]:bg-sidebar-accent data-[active=true]:text-foreground">
                     <Link to={item.url} className="flex items-center gap-2.5">
@@ -103,15 +117,38 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border p-3">
-        <div className="flex items-center gap-2.5">
-          <Avatar className="size-7"><AvatarFallback className="bg-primary/15 text-primary text-xs font-medium">AD</AvatarFallback></Avatar>
-          {!collapsed && (
-            <div className="leading-tight">
-              <div className="text-xs font-medium">Admin</div>
-              <div className="text-[10px] text-muted-foreground">admin@flowerp.io</div>
-            </div>
-          )}
-        </div>
+        {!isLoaded && (
+          <div className="h-8 rounded bg-muted/60 animate-pulse" />
+        )}
+        {isLoaded && isSignedIn && (
+          <div className="flex items-center gap-2.5">
+            <UserButton
+              appearance={{
+                elements: {
+                  userButtonAvatarBox: "size-7",
+                },
+              }}
+            />
+            {!collapsed && (
+              <div className="leading-tight min-w-0">
+                <div className="text-xs font-medium truncate">{user?.fullName ?? user?.username ?? "FlowERP User"}</div>
+                <div className="text-[10px] text-muted-foreground truncate">{user?.primaryEmailAddress?.emailAddress}</div>
+                {profileQuery.data && (
+                  <Badge variant="outline" className="mt-1 h-4 border-border/70 px-1.5 text-[9px] font-medium">
+                    {profileQuery.data.roleLabel}
+                  </Badge>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+        {isLoaded && !isSignedIn && (
+          <SignInButton mode="redirect" forceRedirectUrl="/">
+            <Button size="sm" className={collapsed ? "size-8 p-0" : "h-8 w-full text-xs"}>
+              {collapsed ? "In" : "Sign in"}
+            </Button>
+          </SignInButton>
+        )}
       </SidebarFooter>
     </Sidebar>
   );
