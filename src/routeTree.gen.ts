@@ -9,8 +9,62 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VendorsRouteImport } from './routes/vendors'
+import { Route as SalesOrdersRouteImport } from './routes/sales-orders'
+import { Route as PurchaseOrdersRouteImport } from './routes/purchase-orders'
+import { Route as ProductsRouteImport } from './routes/products'
+import { Route as ManufacturingRouteImport } from './routes/manufacturing'
+import { Route as InventoryRouteImport } from './routes/inventory'
+import { Route as CopilotRouteImport } from './routes/copilot'
+import { Route as BomRouteImport } from './routes/bom'
+import { Route as AuditLogsRouteImport } from './routes/audit-logs'
 import { Route as IndexRouteImport } from './routes/index'
 
+const VendorsRoute = VendorsRouteImport.update({
+  id: '/vendors',
+  path: '/vendors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SalesOrdersRoute = SalesOrdersRouteImport.update({
+  id: '/sales-orders',
+  path: '/sales-orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PurchaseOrdersRoute = PurchaseOrdersRouteImport.update({
+  id: '/purchase-orders',
+  path: '/purchase-orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductsRoute = ProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ManufacturingRoute = ManufacturingRouteImport.update({
+  id: '/manufacturing',
+  path: '/manufacturing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InventoryRoute = InventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CopilotRoute = CopilotRouteImport.update({
+  id: '/copilot',
+  path: '/copilot',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BomRoute = BomRouteImport.update({
+  id: '/bom',
+  path: '/bom',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuditLogsRoute = AuditLogsRouteImport.update({
+  id: '/audit-logs',
+  path: '/audit-logs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +73,158 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/audit-logs': typeof AuditLogsRoute
+  '/bom': typeof BomRoute
+  '/copilot': typeof CopilotRoute
+  '/inventory': typeof InventoryRoute
+  '/manufacturing': typeof ManufacturingRoute
+  '/products': typeof ProductsRoute
+  '/purchase-orders': typeof PurchaseOrdersRoute
+  '/sales-orders': typeof SalesOrdersRoute
+  '/vendors': typeof VendorsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/audit-logs': typeof AuditLogsRoute
+  '/bom': typeof BomRoute
+  '/copilot': typeof CopilotRoute
+  '/inventory': typeof InventoryRoute
+  '/manufacturing': typeof ManufacturingRoute
+  '/products': typeof ProductsRoute
+  '/purchase-orders': typeof PurchaseOrdersRoute
+  '/sales-orders': typeof SalesOrdersRoute
+  '/vendors': typeof VendorsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/audit-logs': typeof AuditLogsRoute
+  '/bom': typeof BomRoute
+  '/copilot': typeof CopilotRoute
+  '/inventory': typeof InventoryRoute
+  '/manufacturing': typeof ManufacturingRoute
+  '/products': typeof ProductsRoute
+  '/purchase-orders': typeof PurchaseOrdersRoute
+  '/sales-orders': typeof SalesOrdersRoute
+  '/vendors': typeof VendorsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/audit-logs'
+    | '/bom'
+    | '/copilot'
+    | '/inventory'
+    | '/manufacturing'
+    | '/products'
+    | '/purchase-orders'
+    | '/sales-orders'
+    | '/vendors'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/audit-logs'
+    | '/bom'
+    | '/copilot'
+    | '/inventory'
+    | '/manufacturing'
+    | '/products'
+    | '/purchase-orders'
+    | '/sales-orders'
+    | '/vendors'
+  id:
+    | '__root__'
+    | '/'
+    | '/audit-logs'
+    | '/bom'
+    | '/copilot'
+    | '/inventory'
+    | '/manufacturing'
+    | '/products'
+    | '/purchase-orders'
+    | '/sales-orders'
+    | '/vendors'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuditLogsRoute: typeof AuditLogsRoute
+  BomRoute: typeof BomRoute
+  CopilotRoute: typeof CopilotRoute
+  InventoryRoute: typeof InventoryRoute
+  ManufacturingRoute: typeof ManufacturingRoute
+  ProductsRoute: typeof ProductsRoute
+  PurchaseOrdersRoute: typeof PurchaseOrdersRoute
+  SalesOrdersRoute: typeof SalesOrdersRoute
+  VendorsRoute: typeof VendorsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/vendors': {
+      id: '/vendors'
+      path: '/vendors'
+      fullPath: '/vendors'
+      preLoaderRoute: typeof VendorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sales-orders': {
+      id: '/sales-orders'
+      path: '/sales-orders'
+      fullPath: '/sales-orders'
+      preLoaderRoute: typeof SalesOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/purchase-orders': {
+      id: '/purchase-orders'
+      path: '/purchase-orders'
+      fullPath: '/purchase-orders'
+      preLoaderRoute: typeof PurchaseOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/products': {
+      id: '/products'
+      path: '/products'
+      fullPath: '/products'
+      preLoaderRoute: typeof ProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/manufacturing': {
+      id: '/manufacturing'
+      path: '/manufacturing'
+      fullPath: '/manufacturing'
+      preLoaderRoute: typeof ManufacturingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inventory': {
+      id: '/inventory'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof InventoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/copilot': {
+      id: '/copilot'
+      path: '/copilot'
+      fullPath: '/copilot'
+      preLoaderRoute: typeof CopilotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bom': {
+      id: '/bom'
+      path: '/bom'
+      fullPath: '/bom'
+      preLoaderRoute: typeof BomRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/audit-logs': {
+      id: '/audit-logs'
+      path: '/audit-logs'
+      fullPath: '/audit-logs'
+      preLoaderRoute: typeof AuditLogsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,17 +237,16 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuditLogsRoute: AuditLogsRoute,
+  BomRoute: BomRoute,
+  CopilotRoute: CopilotRoute,
+  InventoryRoute: InventoryRoute,
+  ManufacturingRoute: ManufacturingRoute,
+  ProductsRoute: ProductsRoute,
+  PurchaseOrdersRoute: PurchaseOrdersRoute,
+  SalesOrdersRoute: SalesOrdersRoute,
+  VendorsRoute: VendorsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
