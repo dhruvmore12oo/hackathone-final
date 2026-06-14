@@ -87,6 +87,35 @@ export const listBoms = createServerFn({ method: "GET" }).handler(async () => {
   return boms.map(mapBom);
 });
 
+const getBomSchema = z.object({ productId: z.string().min(1) });
+
+export const getBomByProduct = createServerFn({ method: "GET" })
+  .inputValidator(getBomSchema)
+  .handler(async ({ data }) => {
+    const { prisma } = await import("../db.server");
+    const { requirePermission } = await import("../auth/server");
+    
+    await requirePermission("bom:read");
+    
+    const bom = await prisma.billOfMaterials.findUnique({
+      where: { productId: data.productId },
+      include: {
+        product: true,
+        lines: {
+          include: { componentProduct: true },
+          orderBy: { id: "asc" },
+        },
+        operations: {
+          include: { workCenter: true },
+          orderBy: { sequence: "asc" },
+        },
+      },
+    });
+
+    if (!bom || !bom.isActive) return null;
+    return mapBom(bom);
+  });
+
 export const listWorkCenters = createServerFn({ method: "GET" }).handler(async () => {
   const { prisma } = await import("../db.server");
   const { requirePermission } = await import("../auth/server");
