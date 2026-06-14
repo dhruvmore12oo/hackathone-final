@@ -5,6 +5,7 @@ import { type AuditAction } from "@prisma/client";
 export type AuditLogItem = {
   id: string;
   user: string;
+  userRole: string;
   action: string;
   module: string;
   target: string;
@@ -84,6 +85,7 @@ export const listAuditLogs = createServerFn({ method: "GET" })
       logs: logs.map<AuditLogItem>((log) => ({
         id: log.id.slice(0, 8).toUpperCase(),
         user: log.user?.name ?? log.user?.email ?? "System",
+        userRole: log.user?.role ?? "SYSTEM",
         action: actionLabels[log.action] ?? log.action,
         module: log.module,
         target: `${log.entityType}:${log.entityId.slice(0, 8)}`,
