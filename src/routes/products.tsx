@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Search, Filter, Plus, Package, Boxes, Wallet, Tag, Pencil, Trash2 } from "lucide-react";
+import { Search, Filter, Plus, Package, Boxes, Wallet, Tag, Pencil, Trash2, LayoutList, KanbanSquare } from "lucide-react";
 
 import { TopBar } from "@/components/topbar";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
 import { getCurrentUserProfile } from "@/lib/api/auth.functions";
 import { createProduct, deactivateProduct, listProductCategories, listProducts, updateProduct, type ProductListItem } from "@/lib/api/products.functions";
@@ -26,11 +28,39 @@ export const Route = createFileRoute("/products")({
   component: ProductsPage,
 });
 
+const kanbanColumns = ["Critical Stock", "Low Stock", "Healthy Stock", "Overstocked"] as const;
+
+function getStockCategory(product: ProductListItem) {
+  const free = product.freeToUse;
+  const rp = product.reorderPoint;
+  if (free <= 0) return "Critical Stock";
+  if (free <= rp) return "Low Stock";
+  if (free > rp * 2) return "Overstocked";
+  return "Healthy Stock";
+}
+
+const getCategoryColor = (category: string) => {
+  if (category === "Critical Stock") return "bg-destructive/15 text-destructive border-destructive/20";
+  if (category === "Low Stock") return "bg-warning/15 text-warning border-warning/20";
+  if (category === "Healthy Stock") return "bg-success/15 text-success border-success/20";
+  if (category === "Overstocked") return "bg-primary/15 text-primary border-primary/20";
+  return "bg-muted text-muted-foreground";
+};
+
 function ProductsPage() {
   const queryClient = useQueryClient();
   const [selected, setSelected] = useState<ProductListItem | null>(null);
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
+  const [viewMode, setViewMode] = useState<"list" | "kanban">(() => {
+    if (typeof window !== "undefined") return (localStorage.getItem("products-view-mode") as "list" | "kanban") || "list";
+    return "list";
+  });
+  const handleViewChange = (mode: string) => {
+    if (!mode) return;
+    setViewMode(mode as "list" | "kanban");
+    localStorage.setItem("products-view-mode", mode);
+  };
   const [createOpen, setCreateOpen] = useState(false);
   const [productForm, setProductForm] = useState({
     sku: "",
@@ -200,6 +230,10 @@ function ProductsPage() {
             <p className="text-sm text-muted-foreground">{list.length} SKUs / {Math.max(cats.length - 1, 0)} categories</p>
           </div>
           <div className="flex items-center gap-2">
+            <ToggleGroup type="single" value={viewMode} onValueChange={handleViewChange} className="bg-card border border-border/70 rounded-md p-0.5">
+              <ToggleGroupItem value="list" className="h-7 px-2 text-xs data-[state=on]:bg-muted"><LayoutList className="size-3.5 mr-1" /> List</ToggleGroupItem>
+              <ToggleGroupItem value="kanban" className="h-7 px-2 text-xs data-[state=on]:bg-muted"><KanbanSquare className="size-3.5 mr-1" /> Kanban</ToggleGroupItem>
+            </ToggleGroup>
             <div className="relative">
               <Search className="size-3.5 absolute left-2.5 top-2.5 text-muted-foreground" />
               <Input
@@ -228,71 +262,121 @@ function ProductsPage() {
           ))}
         </div>
 
-        <Card className="border-border/70 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/30">
-              <tr className="text-left text-[11px] uppercase tracking-wider text-muted-foreground">
-                <th className="px-4 py-2.5 font-medium">SKU</th>
-                <th className="px-4 py-2.5 font-medium">Product</th>
-                <th className="px-4 py-2.5 font-medium">Category</th>
-                <th className="px-4 py-2.5 font-medium">Procurement</th>
-                <th className="px-4 py-2.5 font-medium text-right">Price</th>
-                <th className="px-4 py-2.5 font-medium text-right">On-Hand</th>
-                <th className="px-4 py-2.5 font-medium text-right">Reserved</th>
-                <th className="px-4 py-2.5 font-medium text-right">Free</th>
-                <th className="px-4 py-2.5 font-medium">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading && (
-                Array.from({ length: 5 }).map((_, index) => (
-                  <tr key={index} className="border-t border-border/60">
-                    <td className="px-4 py-3" colSpan={9}>
-                      <div className="h-4 rounded bg-muted/60 animate-pulse" />
+        {viewMode === "list" ? (
+          <Card className="border-border/70 overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/30">
+                <tr className="text-left text-[11px] uppercase tracking-wider text-muted-foreground">
+                  <th className="px-4 py-2.5 font-medium">SKU</th>
+                  <th className="px-4 py-2.5 font-medium">Product</th>
+                  <th className="px-4 py-2.5 font-medium">Category</th>
+                  <th className="px-4 py-2.5 font-medium">Procurement</th>
+                  <th className="px-4 py-2.5 font-medium text-right">Price</th>
+                  <th className="px-4 py-2.5 font-medium text-right">On-Hand</th>
+                  <th className="px-4 py-2.5 font-medium text-right">Reserved</th>
+                  <th className="px-4 py-2.5 font-medium text-right">Free</th>
+                  <th className="px-4 py-2.5 font-medium">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {isLoading && (
+                  Array.from({ length: 5 }).map((_, index) => (
+                    <tr key={index} className="border-t border-border/60">
+                      <td className="px-4 py-3" colSpan={9}>
+                        <div className="h-4 rounded bg-muted/60 animate-pulse" />
+                      </td>
+                    </tr>
+                  ))
+                )}
+                {!isLoading && productsQuery.isError && (
+                  <tr className="border-t border-border/60">
+                    <td className="px-4 py-8 text-center text-sm text-muted-foreground" colSpan={9}>
+                      Products could not be loaded. Check the database connection and try again.
                     </td>
                   </tr>
-                ))
-              )}
-              {!isLoading && productsQuery.isError && (
-                <tr className="border-t border-border/60">
-                  <td className="px-4 py-8 text-center text-sm text-muted-foreground" colSpan={9}>
-                    Products could not be loaded. Check the database connection and try again.
-                  </td>
-                </tr>
-              )}
-              {!isLoading && !productsQuery.isError && list.length === 0 && (
-                <tr className="border-t border-border/60">
-                  <td className="px-4 py-8 text-center text-sm text-muted-foreground" colSpan={9}>
-                    No products found.
-                  </td>
-                </tr>
-              )}
-              {!isLoading && !productsQuery.isError && list.map((product) => {
-                const low = product.freeToUse <= product.reorderPoint;
+                )}
+                {!isLoading && !productsQuery.isError && list.length === 0 && (
+                  <tr className="border-t border-border/60">
+                    <td className="px-4 py-8 text-center text-sm text-muted-foreground" colSpan={9}>
+                      No products found.
+                    </td>
+                  </tr>
+                )}
+                {!isLoading && !productsQuery.isError && list.map((product) => {
+                  const cat = getStockCategory(product);
 
+                  return (
+                    <tr key={product.id} onClick={() => setSelected(product)} className="border-t border-border/60 hover:bg-accent/40 cursor-pointer transition">
+                      <td className="px-4 py-3 text-xs font-mono text-muted-foreground">{product.sku}</td>
+                      <td className="px-4 py-3 font-medium">{product.name}</td>
+                      <td className="px-4 py-3 text-xs text-muted-foreground">{product.category}</td>
+                      <td className="px-4 py-3">
+                        <Badge variant="outline" className="text-[10px] border-border/70">{product.procurement}</Badge>
+                      </td>
+                      <td className="px-4 py-3 text-right tabular-nums">{formatINR(product.salesPrice)}</td>
+                      <td className="px-4 py-3 text-right tabular-nums">{product.onHand}</td>
+                      <td className="px-4 py-3 text-right tabular-nums text-muted-foreground">{product.reserved}</td>
+                      <td className="px-4 py-3 text-right tabular-nums font-medium">{product.freeToUse}</td>
+                      <td className="px-4 py-3">
+                        <Badge className={`text-[10px] ${getCategoryColor(cat)}`}>{cat}</Badge>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </Card>
+        ) : (
+          <ScrollArea className="w-full whitespace-nowrap pb-4">
+            <div className="flex gap-4 min-w-max h-[70vh]">
+              {kanbanColumns.map(status => {
+                const columnOrders = list.filter(p => getStockCategory(p) === status);
                 return (
-                  <tr key={product.id} onClick={() => setSelected(product)} className="border-t border-border/60 hover:bg-accent/40 cursor-pointer transition">
-                    <td className="px-4 py-3 text-xs font-mono text-muted-foreground">{product.sku}</td>
-                    <td className="px-4 py-3 font-medium">{product.name}</td>
-                    <td className="px-4 py-3 text-xs text-muted-foreground">{product.category}</td>
-                    <td className="px-4 py-3">
-                      <Badge variant="outline" className="text-[10px] border-border/70">{product.procurement}</Badge>
-                    </td>
-                    <td className="px-4 py-3 text-right tabular-nums">{formatINR(product.salesPrice)}</td>
-                    <td className="px-4 py-3 text-right tabular-nums">{product.onHand}</td>
-                    <td className="px-4 py-3 text-right tabular-nums text-muted-foreground">{product.reserved}</td>
-                    <td className="px-4 py-3 text-right tabular-nums font-medium">{product.freeToUse}</td>
-                    <td className="px-4 py-3">
-                      <Badge className={low ? "bg-destructive/15 text-destructive border-destructive/20 hover:bg-destructive/15 text-[10px]" : "bg-success/15 text-success border-success/20 hover:bg-success/15 text-[10px]"}>
-                        {low ? "Low Stock" : "Healthy"}
-                      </Badge>
-                    </td>
-                  </tr>
-                );
+                  <div key={status} className="w-[320px] max-w-[400px] shrink-0 flex flex-col gap-3 bg-muted/20 rounded-xl p-3 border border-border/50 h-full overflow-hidden flex-1">
+                    <div className="flex items-center justify-between px-1">
+                      <h3 className="text-sm font-semibold tracking-tight text-foreground flex items-center gap-2">
+                        <Badge variant="outline" className={`border-0 w-2 h-2 p-0 rounded-full ${getCategoryColor(status).split(" ")[0]}`} />
+                        {status}
+                      </h3>
+                      <Badge variant="secondary" className="text-xs bg-background">{columnOrders.length}</Badge>
+                    </div>
+                    
+                    <ScrollArea className="flex-1 -mx-1 px-1">
+                      <div className="flex flex-col gap-3 pb-2">
+                        {columnOrders.map(product => (
+                          <Card key={product.id} onClick={() => setSelected(product)} className="p-3 border-border/70 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer whitespace-normal flex flex-col gap-3 group relative cursor-grab active:cursor-grabbing">
+                            <div className="flex items-start justify-between">
+                              <span className="text-xs font-mono text-muted-foreground">{product.sku}</span>
+                              <Badge className={`${getCategoryColor(status)} shrink-0 px-1.5 py-0`}>{status}</Badge>
+                            </div>
+                            <div>
+                              <div className="font-semibold text-sm line-clamp-1 group-hover:text-primary transition-colors">{product.name}</div>
+                              <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
+                                <span className="tabular-nums font-medium text-foreground">{formatINR(product.salesPrice)}</span> • {product.vendorName ?? "Internal"}
+                              </div>
+                            </div>
+                            <div className="mt-1">
+                              <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-1">
+                                <span>Free to Use</span><span className="tabular-nums text-foreground">{product.freeToUse} / {product.onHand} On Hand</span>
+                              </div>
+                              <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                                <div 
+                                  className={`h-full ${getCategoryColor(status).split(" ")[0]}`} 
+                                  style={{ width: `${Math.min((product.freeToUse / (product.reorderPoint || 1)) * 50, 100)}%` }}
+                                />
+                              </div>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  </div>
+                )
               })}
-            </tbody>
-          </table>
-        </Card>
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        )}
       </main>
 
       <Sheet open={!!selected} onOpenChange={(open) => !open && setSelected(null)}>

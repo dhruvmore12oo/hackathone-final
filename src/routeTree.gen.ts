@@ -22,6 +22,7 @@ import { Route as CopilotRouteImport } from './routes/copilot'
 import { Route as ChooseRoleRouteImport } from './routes/choose-role'
 import { Route as BomRouteImport } from './routes/bom'
 import { Route as AuditLogsRouteImport } from './routes/audit-logs'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SignUpSsoCallbackRouteImport } from './routes/sign-up.sso-callback'
 import { Route as SignInSsoCallbackRouteImport } from './routes/sign-in.sso-callback'
@@ -91,6 +92,11 @@ const AuditLogsRoute = AuditLogsRouteImport.update({
   path: '/audit-logs',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -109,6 +115,7 @@ const SignInSsoCallbackRoute = SignInSsoCallbackRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/audit-logs': typeof AuditLogsRoute
   '/bom': typeof BomRoute
   '/choose-role': typeof ChooseRoleRoute
@@ -127,6 +134,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/audit-logs': typeof AuditLogsRoute
   '/bom': typeof BomRoute
   '/choose-role': typeof ChooseRoleRoute
@@ -146,6 +154,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/audit-logs': typeof AuditLogsRoute
   '/bom': typeof BomRoute
   '/choose-role': typeof ChooseRoleRoute
@@ -166,6 +175,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/audit-logs'
     | '/bom'
     | '/choose-role'
@@ -184,6 +194,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/audit-logs'
     | '/bom'
     | '/choose-role'
@@ -202,6 +213,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/audit-logs'
     | '/bom'
     | '/choose-role'
@@ -221,6 +233,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   AuditLogsRoute: typeof AuditLogsRoute
   BomRoute: typeof BomRoute
   ChooseRoleRoute: typeof ChooseRoleRoute
@@ -329,6 +342,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuditLogsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -377,6 +397,7 @@ const SignUpRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   AuditLogsRoute: AuditLogsRoute,
   BomRoute: BomRoute,
   ChooseRoleRoute: ChooseRoleRoute,

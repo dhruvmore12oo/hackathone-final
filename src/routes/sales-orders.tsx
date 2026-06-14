@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Search, Plus, Factory, ArrowRight, Sparkles, CheckCircle2, AlertCircle, Trash2, XCircle } from "lucide-react";
+import { Search, Plus, Factory, ArrowRight, Sparkles, CheckCircle2, AlertCircle, Trash2, XCircle, LayoutList, KanbanSquare } from "lucide-react";
 
 import { TopBar } from "@/components/topbar";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { getCurrentUserProfile } from "@/lib/api/auth.functions";
 import { listProducts } from "@/lib/api/products.functions";
 import { cancelSalesOrder, confirmSalesOrder, createSalesOrder, deliverSalesOrder, listSalesOrders, type SalesOrderListItem, type SalesOrderStatusLabel } from "@/lib/api/sales.functions";
@@ -47,6 +49,15 @@ function SalesPage() {
   const queryClient = useQueryClient();
   const [selected, setSelected] = useState<SalesOrderListItem | null>(null);
   const [search, setSearch] = useState("");
+  const [viewMode, setViewMode] = useState<"list" | "kanban">(() => {
+    if (typeof window !== "undefined") return (localStorage.getItem("sales-view-mode") as "list" | "kanban") || "list";
+    return "list";
+  });
+  const handleViewChange = (mode: string) => {
+    if (!mode) return;
+    setViewMode(mode as "list" | "kanban");
+    localStorage.setItem("sales-view-mode", mode);
+  };
   const [createOpen, setCreateOpen] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [draftLines, setDraftLines] = useState([makeDraftLine()]);
@@ -190,6 +201,10 @@ function SalesPage() {
             <p className="text-sm text-muted-foreground">{filteredOrders.length} orders / {formatINR(pipelineValue)} pipeline value</p>
           </div>
           <div className="flex items-center gap-2">
+            <ToggleGroup type="single" value={viewMode} onValueChange={handleViewChange} className="bg-card border border-border/70 rounded-md p-0.5">
+              <ToggleGroupItem value="list" className="h-7 px-2 text-xs data-[state=on]:bg-muted"><LayoutList className="size-3.5 mr-1" /> List</ToggleGroupItem>
+              <ToggleGroupItem value="kanban" className="h-7 px-2 text-xs data-[state=on]:bg-muted"><KanbanSquare className="size-3.5 mr-1" /> Kanban</ToggleGroupItem>
+            </ToggleGroup>
             <div className="relative">
               <Search className="size-3.5 absolute left-2.5 top-2.5 text-muted-foreground" />
               <Input
@@ -214,53 +229,98 @@ function SalesPage() {
           ))}
         </div>
 
-        <Card className="border-border/70 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/30">
-              <tr className="text-left text-[11px] uppercase tracking-wider text-muted-foreground">
-                <th className="px-4 py-2.5 font-medium">Order ID</th>
-                <th className="px-4 py-2.5 font-medium">Customer</th>
-                <th className="px-4 py-2.5 font-medium text-right">Amount</th>
-                <th className="px-4 py-2.5 font-medium">Status</th>
-                <th className="px-4 py-2.5 font-medium">Date</th>
-                <th className="px-4 py-2.5 font-medium w-8"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {salesQuery.isLoading && Array.from({ length: 5 }).map((_, index) => (
-                <tr key={index} className="border-t border-border/60">
-                  <td className="px-4 py-3" colSpan={6}>
-                    <div className="h-4 rounded bg-muted/60 animate-pulse" />
-                  </td>
+        {viewMode === "list" ? (
+          <Card className="border-border/70 overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/30">
+                <tr className="text-left text-[11px] uppercase tracking-wider text-muted-foreground">
+                  <th className="px-4 py-2.5 font-medium">Order ID</th>
+                  <th className="px-4 py-2.5 font-medium">Customer</th>
+                  <th className="px-4 py-2.5 font-medium text-right">Amount</th>
+                  <th className="px-4 py-2.5 font-medium">Status</th>
+                  <th className="px-4 py-2.5 font-medium">Date</th>
+                  <th className="px-4 py-2.5 font-medium w-8"></th>
                 </tr>
-              ))}
-              {!salesQuery.isLoading && salesQuery.isError && (
-                <tr className="border-t border-border/60">
-                  <td className="px-4 py-8 text-center text-sm text-muted-foreground" colSpan={6}>
-                    Sales orders could not be loaded. Check the database connection and try again.
-                  </td>
-                </tr>
-              )}
-              {!salesQuery.isLoading && !salesQuery.isError && filteredOrders.length === 0 && (
-                <tr className="border-t border-border/60">
-                  <td className="px-4 py-8 text-center text-sm text-muted-foreground" colSpan={6}>
-                    No sales orders found.
-                  </td>
-                </tr>
-              )}
-              {!salesQuery.isLoading && !salesQuery.isError && filteredOrders.map((order) => (
-                <tr key={order.id} onClick={() => setSelected(order)} className="border-t border-border/60 hover:bg-accent/40 cursor-pointer transition">
-                  <td className="px-4 py-3 font-mono text-xs">{order.orderNumber}</td>
-                  <td className="px-4 py-3 font-medium">{order.customer}</td>
-                  <td className="px-4 py-3 text-right tabular-nums font-medium">{formatINR(order.amount)}</td>
-                  <td className="px-4 py-3"><Badge className={statusTone[order.status]}>{order.status}</Badge></td>
-                  <td className="px-4 py-3 text-xs text-muted-foreground tabular-nums">{order.date}</td>
-                  <td className="px-4 py-3"><ArrowRight className="size-3.5 text-muted-foreground" /></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </Card>
+              </thead>
+              <tbody>
+                {salesQuery.isLoading && Array.from({ length: 5 }).map((_, index) => (
+                  <tr key={index} className="border-t border-border/60">
+                    <td className="px-4 py-3" colSpan={6}>
+                      <div className="h-4 rounded bg-muted/60 animate-pulse" />
+                    </td>
+                  </tr>
+                ))}
+                {!salesQuery.isLoading && salesQuery.isError && (
+                  <tr className="border-t border-border/60">
+                    <td className="px-4 py-8 text-center text-sm text-muted-foreground" colSpan={6}>
+                      Sales orders could not be loaded. Check the database connection and try again.
+                    </td>
+                  </tr>
+                )}
+                {!salesQuery.isLoading && !salesQuery.isError && filteredOrders.length === 0 && (
+                  <tr className="border-t border-border/60">
+                    <td className="px-4 py-8 text-center text-sm text-muted-foreground" colSpan={6}>
+                      No sales orders found.
+                    </td>
+                  </tr>
+                )}
+                {!salesQuery.isLoading && !salesQuery.isError && filteredOrders.map((order) => (
+                  <tr key={order.id} onClick={() => setSelected(order)} className="border-t border-border/60 hover:bg-accent/40 cursor-pointer transition">
+                    <td className="px-4 py-3 font-mono text-xs">{order.orderNumber}</td>
+                    <td className="px-4 py-3 font-medium">{order.customer}</td>
+                    <td className="px-4 py-3 text-right tabular-nums font-medium">{formatINR(order.amount)}</td>
+                    <td className="px-4 py-3"><Badge className={statusTone[order.status]}>{order.status}</Badge></td>
+                    <td className="px-4 py-3 text-xs text-muted-foreground tabular-nums">{order.date}</td>
+                    <td className="px-4 py-3"><ArrowRight className="size-3.5 text-muted-foreground" /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Card>
+        ) : (
+          <ScrollArea className="w-full whitespace-nowrap pb-4">
+            <div className="flex gap-4 min-w-max h-[70vh]">
+              {summaryStatuses.map(status => {
+                const columnOrders = filteredOrders.filter(o => o.status === status);
+                return (
+                  <div key={status} className="w-[320px] max-w-[400px] shrink-0 flex flex-col gap-3 bg-muted/20 rounded-xl p-3 border border-border/50 h-full overflow-hidden flex-1">
+                    <div className="flex items-center justify-between px-1">
+                      <h3 className="text-sm font-semibold tracking-tight text-foreground flex items-center gap-2">
+                        <Badge variant="outline" className={`border-0 w-2 h-2 p-0 rounded-full ${statusTone[status].split(" ")[0]}`} />
+                        {status}
+                      </h3>
+                      <Badge variant="secondary" className="text-xs bg-background">{columnOrders.length}</Badge>
+                    </div>
+                    
+                    <ScrollArea className="flex-1 -mx-1 px-1">
+                      <div className="flex flex-col gap-3 pb-2">
+                        {columnOrders.map(order => (
+                          <Card key={order.id} onClick={() => setSelected(order)} className="p-3 border-border/70 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer whitespace-normal flex flex-col gap-3 group relative cursor-grab active:cursor-grabbing">
+                            <div className="flex items-start justify-between">
+                              <span className="text-xs font-mono text-muted-foreground">{order.orderNumber}</span>
+                              <Badge className={`${statusTone[order.status]} shrink-0 px-1.5 py-0`}>{order.status}</Badge>
+                            </div>
+                            <div>
+                              <div className="font-semibold text-sm line-clamp-1 group-hover:text-primary transition-colors">{order.customer}</div>
+                              <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
+                                <span className="tabular-nums font-medium text-foreground">{formatINR(order.amount)}</span> • {order.items.length} items
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between mt-1 pt-3 border-t border-border/40">
+                              <span className="text-[10px] text-muted-foreground tabular-nums">{order.date}</span>
+                              <span className="text-[10px] font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">View Details</span>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  </div>
+                )
+              })}
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        )}
       </main>
 
       <Sheet open={!!selected} onOpenChange={(open) => !open && setSelected(null)}>

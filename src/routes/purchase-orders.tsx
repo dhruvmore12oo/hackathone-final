@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Plus, CheckCircle2, PackageCheck, Trash2, XCircle, FileText, Package } from "lucide-react";
+import { Plus, CheckCircle2, PackageCheck, Trash2, XCircle, FileText, Package, LayoutList, KanbanSquare } from "lucide-react";
 
 import { TopBar } from "@/components/topbar";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { getCurrentUserProfile } from "@/lib/api/auth.functions";
 import { listProducts } from "@/lib/api/products.functions";
 import { cancelPurchaseOrder, requestPurchaseApproval, approvePurchaseOrder, createPurchaseOrder, listPurchaseOrders, receivePurchaseOrder, type PurchaseOrderListItem, type PurchaseOrderStatusLabel } from "@/lib/api/purchase.functions";
@@ -44,9 +46,20 @@ function makeDraftLine() {
   };
 }
 
+const summaryStatuses = ["Draft", "Pending Approval", "Approved", "Confirmed", "Partially Received", "Fully Received", "Cancelled"] as const;
+
 function POPage() {
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"list" | "kanban">(() => {
+    if (typeof window !== "undefined") return (localStorage.getItem("po-view-mode") as "list" | "kanban") || "list";
+    return "list";
+  });
+  const handleViewChange = (mode: string) => {
+    if (!mode) return;
+    setViewMode(mode as "list" | "kanban");
+    localStorage.setItem("po-view-mode", mode);
+  };
   const [vendorId, setVendorId] = useState("");
   const handleVendorChange = (id: string) => {
     setVendorId(id);
@@ -198,128 +211,179 @@ function POPage() {
             <h2 className="text-xl font-semibold tracking-tight">Purchase Orders</h2>
             <p className="text-sm text-muted-foreground">{pos.length} active POs / {formatINR(pos.reduce((sum, order) => sum + order.amount, 0))} committed</p>
           </div>
-          {hasCreatePerm && (
-            <Button size="sm" onClick={() => setCreateOpen(true)} className="h-8 text-xs gap-1.5"><Plus className="size-3.5" /> Create Purchase Order</Button>
-          )}
+          <div className="flex items-center gap-2">
+            <ToggleGroup type="single" value={viewMode} onValueChange={handleViewChange} className="bg-card border border-border/70 rounded-md p-0.5">
+              <ToggleGroupItem value="list" className="h-7 px-2 text-xs data-[state=on]:bg-muted"><LayoutList className="size-3.5 mr-1" /> List</ToggleGroupItem>
+              <ToggleGroupItem value="kanban" className="h-7 px-2 text-xs data-[state=on]:bg-muted"><KanbanSquare className="size-3.5 mr-1" /> Kanban</ToggleGroupItem>
+            </ToggleGroup>
+            {hasCreatePerm && (
+              <Button size="sm" onClick={() => setCreateOpen(true)} className="h-8 text-xs gap-1.5"><Plus className="size-3.5" /> Create Purchase Order</Button>
+            )}
+          </div>
         </div>
-        <Card className="border-border/70 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/30">
-              <tr className="text-left text-[11px] uppercase tracking-wider text-muted-foreground">
-                <th className="px-4 py-2.5 font-medium">PO</th>
-                <th className="px-4 py-2.5 font-medium">Vendor</th>
-                <th className="px-4 py-2.5 font-medium">Item</th>
-                <th className="px-4 py-2.5 font-medium text-right">Amount</th>
-                <th className="px-4 py-2.5 font-medium">Status</th>
-                <th className="px-4 py-2.5 font-medium">Source</th>
-                <th className="px-4 py-2.5 font-medium">Date</th>
-                <th className="px-4 py-2.5 font-medium text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {poQuery.isLoading && Array.from({ length: 5 }).map((_, index) => (
-                <tr key={index} className="border-t border-border/60">
-                  <td className="px-4 py-3" colSpan={8}>
-                    <div className="h-4 rounded bg-muted/60 animate-pulse" />
-                  </td>
+        {viewMode === "list" ? (
+          <Card className="border-border/70 overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/30">
+                <tr className="text-left text-[11px] uppercase tracking-wider text-muted-foreground">
+                  <th className="px-4 py-2.5 font-medium">PO</th>
+                  <th className="px-4 py-2.5 font-medium">Vendor</th>
+                  <th className="px-4 py-2.5 font-medium">Item</th>
+                  <th className="px-4 py-2.5 font-medium text-right">Amount</th>
+                  <th className="px-4 py-2.5 font-medium">Status</th>
+                  <th className="px-4 py-2.5 font-medium">Source</th>
+                  <th className="px-4 py-2.5 font-medium">Date</th>
+                  <th className="px-4 py-2.5 font-medium text-right">Action</th>
                 </tr>
-              ))}
-              {!poQuery.isLoading && poQuery.isError && (
-                <tr className="border-t border-border/60">
-                  <td className="px-4 py-8 text-center text-sm text-muted-foreground" colSpan={8}>
-                    Purchase orders could not be loaded. Check the database connection and try again.
-                  </td>
-                </tr>
-              )}
-              {!poQuery.isLoading && !poQuery.isError && pos.length === 0 && (
-                <tr className="border-t border-border/60">
-                  <td className="px-4 py-8 text-center text-sm text-muted-foreground" colSpan={8}>
-                    No purchase orders found.
-                  </td>
-                </tr>
-              )}
-              {!poQuery.isLoading && !poQuery.isError && pos.map((order) => (
-                <tr key={order.id} className="border-t border-border/60 hover:bg-accent/40 transition cursor-pointer" onClick={() => setSelected(order)}>
-                  <td className="px-4 py-3 font-mono text-xs">{order.poNumber}</td>
-                  <td className="px-4 py-3">{order.vendor}</td>
-                  <td className="px-4 py-3 text-xs text-muted-foreground">{order.itemSummary}</td>
-                  <td className="px-4 py-3 text-right tabular-nums">{formatINR(order.amount)}</td>
-                  <td className="px-4 py-3"><Badge className={tone[order.status]}>{order.status}</Badge></td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-1.5">
-                      <Badge variant="outline" className="text-[10px] border-border/70">{order.sourceType}</Badge>
-                      {order.sourceSoNumber && (
-                        <span className="text-[10px] font-mono text-muted-foreground">← {order.sourceSoNumber}</span>
+              </thead>
+              <tbody>
+                {poQuery.isLoading && Array.from({ length: 5 }).map((_, index) => (
+                  <tr key={index} className="border-t border-border/60">
+                    <td className="px-4 py-3" colSpan={8}>
+                      <div className="h-4 rounded bg-muted/60 animate-pulse" />
+                    </td>
+                  </tr>
+                ))}
+                {!poQuery.isLoading && poQuery.isError && (
+                  <tr className="border-t border-border/60">
+                    <td className="px-4 py-8 text-center text-sm text-muted-foreground" colSpan={8}>
+                      Purchase orders could not be loaded. Check the database connection and try again.
+                    </td>
+                  </tr>
+                )}
+                {!poQuery.isLoading && !poQuery.isError && pos.length === 0 && (
+                  <tr className="border-t border-border/60">
+                    <td className="px-4 py-8 text-center text-sm text-muted-foreground" colSpan={8}>
+                      No purchase orders found.
+                    </td>
+                  </tr>
+                )}
+                {!poQuery.isLoading && !poQuery.isError && pos.map((order) => (
+                  <tr key={order.id} className="border-t border-border/60 hover:bg-accent/40 transition cursor-pointer" onClick={() => setSelected(order)}>
+                    <td className="px-4 py-3 font-mono text-xs">{order.poNumber}</td>
+                    <td className="px-4 py-3">{order.vendor}</td>
+                    <td className="px-4 py-3 text-xs text-muted-foreground">{order.itemSummary}</td>
+                    <td className="px-4 py-3 text-right tabular-nums">{formatINR(order.amount)}</td>
+                    <td className="px-4 py-3"><Badge className={tone[order.status]}>{order.status}</Badge></td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1.5">
+                        <Badge variant="outline" className="text-[10px] border-border/70">{order.sourceType}</Badge>
+                        {order.sourceSoNumber && (
+                          <span className="text-[10px] font-mono text-muted-foreground">← {order.sourceSoNumber}</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-xs text-muted-foreground tabular-nums">{order.date}</td>
+                    <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+                      {order.status === "Draft" && canWrite && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={requestMutation.isPending}
+                          onClick={() => requestMutation.mutate(order.id)}
+                          className="h-7 text-[11px] gap-1.5"
+                        >
+                          <CheckCircle2 className="size-3" /> Request Approval
+                        </Button>
                       )}
+                      {order.status === "Pending Approval" && canApprove && (
+                        <Button
+                          size="sm"
+                          variant="default"
+                          disabled={approveMutation.isPending}
+                          onClick={() => approveMutation.mutate(order.id)}
+                          className="h-7 text-[11px] gap-1.5"
+                        >
+                          <CheckCircle2 className="size-3" /> Approve
+                        </Button>
+                      )}
+                      {(order.status === "Approved" || order.status === "Confirmed" || order.status === "Partially Received") && (canWrite || canEditOwn) && (
+                        <Button
+                          size="sm"
+                          disabled={receiveMutation.isPending}
+                          onClick={() => { setReceivingPO(order); setReceiveQtys({}); }}
+                          className="h-7 text-[11px] gap-1.5"
+                        >
+                          <PackageCheck className="size-3" /> Receive
+                        </Button>
+                      )}
+                      {(order.status === "Draft" || order.status === "Pending Approval" || order.status === "Confirmed") && canDelete && (
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button size="sm" variant="ghost" className="h-7 text-[11px] text-destructive hover:text-destructive hover:bg-destructive/10">
+                              <XCircle className="size-3" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent className="bg-card border-border">
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Cancel {order.poNumber}?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will cancel the purchase order. This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Keep PO</AlertDialogCancel>
+                              <AlertDialogAction
+                                disabled={cancelMutation.isPending}
+                                onClick={() => { cancelMutation.mutate(order.id); setSelected(null); }}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Cancel PO
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Card>
+        ) : (
+          <ScrollArea className="w-full whitespace-nowrap pb-4">
+            <div className="flex gap-4 min-w-max h-[70vh]">
+              {summaryStatuses.map(status => {
+                const columnOrders = pos.filter(o => o.status === status);
+                return (
+                  <div key={status} className="w-[320px] max-w-[400px] shrink-0 flex flex-col gap-3 bg-muted/20 rounded-xl p-3 border border-border/50 h-full overflow-hidden flex-1">
+                    <div className="flex items-center justify-between px-1">
+                      <h3 className="text-sm font-semibold tracking-tight text-foreground flex items-center gap-2">
+                        <Badge variant="outline" className={`border-0 w-2 h-2 p-0 rounded-full ${tone[status].split(" ")[0]}`} />
+                        {status}
+                      </h3>
+                      <Badge variant="secondary" className="text-xs bg-background">{columnOrders.length}</Badge>
                     </div>
-                  </td>
-                  <td className="px-4 py-3 text-xs text-muted-foreground tabular-nums">{order.date}</td>
-                  <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
-                    {order.status === "Draft" && canWrite && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        disabled={requestMutation.isPending}
-                        onClick={() => requestMutation.mutate(order.id)}
-                        className="h-7 text-[11px] gap-1.5"
-                      >
-                        <CheckCircle2 className="size-3" /> Request Approval
-                      </Button>
-                    )}
-                    {order.status === "Pending Approval" && canApprove && (
-                      <Button
-                        size="sm"
-                        variant="default"
-                        disabled={approveMutation.isPending}
-                        onClick={() => approveMutation.mutate(order.id)}
-                        className="h-7 text-[11px] gap-1.5"
-                      >
-                        <CheckCircle2 className="size-3" /> Approve
-                      </Button>
-                    )}
-                    {(order.status === "Approved" || order.status === "Confirmed" || order.status === "Partially Received") && (canWrite || canEditOwn) && (
-                      <Button
-                        size="sm"
-                        disabled={receiveMutation.isPending}
-                        onClick={() => { setReceivingPO(order); setReceiveQtys({}); }}
-                        className="h-7 text-[11px] gap-1.5"
-                      >
-                        <PackageCheck className="size-3" /> Receive
-                      </Button>
-                    )}
-                    {(order.status === "Draft" || order.status === "Pending Approval" || order.status === "Confirmed") && canDelete && (
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button size="sm" variant="ghost" className="h-7 text-[11px] text-destructive hover:text-destructive hover:bg-destructive/10">
-                            <XCircle className="size-3" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent className="bg-card border-border">
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Cancel {order.poNumber}?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This will cancel the purchase order. This action cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Keep PO</AlertDialogCancel>
-                            <AlertDialogAction
-                              disabled={cancelMutation.isPending}
-                              onClick={() => { cancelMutation.mutate(order.id); setSelected(null); }}
-                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                            >
-                              Cancel PO
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </Card>
+                    
+                    <ScrollArea className="flex-1 -mx-1 px-1">
+                      <div className="flex flex-col gap-3 pb-2">
+                        {columnOrders.map(order => (
+                          <Card key={order.id} onClick={() => setSelected(order)} className="p-3 border-border/70 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer whitespace-normal flex flex-col gap-3 group relative cursor-grab active:cursor-grabbing">
+                            <div className="flex items-start justify-between">
+                              <span className="text-xs font-mono text-muted-foreground">{order.poNumber}</span>
+                              <Badge className={`${tone[order.status]} shrink-0 px-1.5 py-0`}>{order.status}</Badge>
+                            </div>
+                            <div>
+                              <div className="font-semibold text-sm line-clamp-1 group-hover:text-primary transition-colors">{order.vendor}</div>
+                              <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
+                                <span className="tabular-nums font-medium text-foreground">{formatINR(order.amount)}</span> • {order.sourceType}
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between mt-1 pt-3 border-t border-border/40">
+                              <span className="text-[10px] text-muted-foreground tabular-nums">{order.date}</span>
+                              <span className="text-[10px] font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">View Actions</span>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  </div>
+                )
+              })}
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        )}
       </main>
 
       <Sheet open={!!selected} onOpenChange={(open) => !open && setSelected(null)}>

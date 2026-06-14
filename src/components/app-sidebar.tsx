@@ -28,7 +28,8 @@ const secondary = [
   { title: "Bill of Materials", url: "/bom", icon: ListTree, permission: "bom:read" },
   { title: "Vendors", url: "/vendors", icon: Truck, permission: "vendors:read" },
   { title: "Audit Logs", url: "/audit-logs", icon: ScrollText, permission: "audit_logs:read" },
-  { title: "Users & Roles", url: "/users", icon: Users, permission: "users:read" },
+  { title: "Admin Console", url: "/admin", icon: Workflow, permission: "admin:manage" },
+  { title: "Users & Roles", url: "/users", icon: Users, permission: "admin:manage" },
 ];
 
 export function AppSidebar() {

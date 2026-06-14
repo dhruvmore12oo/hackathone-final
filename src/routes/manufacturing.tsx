@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Plus, Clock, CheckCircle2, Circle, ListTree, Calendar, GitBranch, Play, PackageCheck, XCircle } from "lucide-react";
+import { Plus, Clock, CheckCircle2, Circle, ListTree, Calendar, GitBranch, Play, PackageCheck, XCircle, LayoutList, KanbanSquare } from "lucide-react";
 
 import { TopBar } from "@/components/topbar";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +16,8 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { getCurrentUserProfile } from "@/lib/api/auth.functions";
 import { listProducts } from "@/lib/api/products.functions";
 import {
@@ -38,7 +40,10 @@ const columns: { key: ManufacturingOrderStatusLabel; label: string; icon: any; t
   { key: "Draft", label: "Draft", icon: Circle, tone: "text-muted-foreground" },
   { key: "In Progress", label: "In Progress", icon: Clock, tone: "text-warning" },
   { key: "Completed", label: "Completed", icon: CheckCircle2, tone: "text-success" },
+  { key: "Cancelled", label: "Cancelled", icon: XCircle, tone: "text-destructive" },
 ];
+
+const kanbanColumns = ["Draft", "In Progress", "Completed", "Cancelled"] as const;
 
 const statusTone: Record<ManufacturingOrderStatusLabel, string> = {
   Draft: "bg-muted text-muted-foreground border-border text-[10px]",
@@ -51,6 +56,15 @@ function ManufacturingPage() {
   const queryClient = useQueryClient();
   const [selected, setSelected] = useState<ManufacturingOrderListItem | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"list" | "kanban">(() => {
+    if (typeof window !== "undefined") return (localStorage.getItem("mo-view-mode") as "list" | "kanban") || "list";
+    return "list";
+  });
+  const handleViewChange = (mode: string) => {
+    if (!mode) return;
+    setViewMode(mode as "list" | "kanban");
+    localStorage.setItem("mo-view-mode", mode);
+  };
   const [moForm, setMoForm] = useState({ productId: "", qty: "1", scheduledDate: "" });
   const listManufacturingOrdersFn = useServerFn(listManufacturingOrders);
   const listProductsFn = useServerFn(listProducts);
@@ -171,61 +185,115 @@ function ManufacturingPage() {
             <h2 className="text-xl font-semibold tracking-tight">Manufacturing Board</h2>
             <p className="text-sm text-muted-foreground">{orders.length} work orders across 3 stages</p>
           </div>
-          {hasCreatePerm && (
-            <Button size="sm" onClick={() => setCreateOpen(true)} className="h-8 text-xs gap-1.5"><Plus className="size-3.5" /> New MO</Button>
-          )}
+          <div className="flex items-center gap-2">
+            <ToggleGroup type="single" value={viewMode} onValueChange={handleViewChange} className="bg-card border border-border/70 rounded-md p-0.5">
+              <ToggleGroupItem value="list" className="h-7 px-2 text-xs data-[state=on]:bg-muted"><LayoutList className="size-3.5 mr-1" /> List</ToggleGroupItem>
+              <ToggleGroupItem value="kanban" className="h-7 px-2 text-xs data-[state=on]:bg-muted"><KanbanSquare className="size-3.5 mr-1" /> Kanban</ToggleGroupItem>
+            </ToggleGroup>
+            {hasCreatePerm && (
+              <Button size="sm" onClick={() => setCreateOpen(true)} className="h-8 text-xs gap-1.5"><Plus className="size-3.5" /> New MO</Button>
+            )}
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-          {columns.map((column) => {
-            const cards = orders.filter((order) => order.status === column.key);
-            return (
-              <div key={column.key} className="rounded-lg border border-border/70 bg-card/40">
-                <div className="px-4 py-3 border-b border-border/70 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <column.icon className={`size-3.5 ${column.tone}`} />
-                    <span className="text-xs font-semibold">{column.label}</span>
-                    <span className="text-[10px] text-muted-foreground tabular-nums">{cards.length}</span>
-                  </div>
-                  {hasCreatePerm && (
-                    <Button size="sm" variant="ghost" onClick={() => setCreateOpen(true)} className="size-6 p-0"><Plus className="size-3.5" /></Button>
-                  )}
-                </div>
-                <div className="p-2 space-y-2 min-h-[400px]">
-                  {manufacturingQuery.isLoading && Array.from({ length: 2 }).map((_, index) => (
-                    <Card key={index} className="p-3 border-border/70 bg-card">
-                      <div className="h-20 rounded bg-muted/60 animate-pulse" />
-                    </Card>
-                  ))}
-                  {!manufacturingQuery.isLoading && cards.length === 0 && (
-                    <div className="p-4 text-xs text-muted-foreground">No orders in this stage.</div>
-                  )}
-                  {!manufacturingQuery.isLoading && cards.map((order) => (
-                    <Card key={order.id} onClick={() => setSelected(order)} className="p-3 border-border/70 hover:border-primary/40 cursor-pointer transition bg-card">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono text-muted-foreground">{order.moNumber}</span>
-                        {order.linkedSO && <Badge variant="outline" className="text-[9px] border-border/70 px-1.5 py-0">{order.linkedSO}</Badge>}
+        {viewMode === "list" ? (
+          <Card className="border-border/70 overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/30">
+                <tr className="text-left text-[11px] uppercase tracking-wider text-muted-foreground">
+                  <th className="px-4 py-2.5 font-medium">MO Number</th>
+                  <th className="px-4 py-2.5 font-medium">Product</th>
+                  <th className="px-4 py-2.5 font-medium text-right">Qty</th>
+                  <th className="px-4 py-2.5 font-medium">Progress</th>
+                  <th className="px-4 py-2.5 font-medium">Status</th>
+                  <th className="px-4 py-2.5 font-medium">Due Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {manufacturingQuery.isLoading && Array.from({ length: 3 }).map((_, index) => (
+                  <tr key={index} className="border-t border-border/60">
+                    <td className="px-4 py-3" colSpan={6}>
+                      <div className="h-4 rounded bg-muted/60 animate-pulse" />
+                    </td>
+                  </tr>
+                ))}
+                {!manufacturingQuery.isLoading && orders.length === 0 && (
+                  <tr className="border-t border-border/60">
+                    <td className="px-4 py-8 text-center text-sm text-muted-foreground" colSpan={6}>
+                      No manufacturing orders found.
+                    </td>
+                  </tr>
+                )}
+                {!manufacturingQuery.isLoading && orders.map((order) => (
+                  <tr key={order.id} onClick={() => setSelected(order)} className="border-t border-border/60 hover:bg-accent/40 cursor-pointer transition">
+                    <td className="px-4 py-3 font-mono text-xs">{order.moNumber}</td>
+                    <td className="px-4 py-3 font-medium">{order.product}</td>
+                    <td className="px-4 py-3 text-right tabular-nums">{order.qty}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <Progress value={order.progress} className="h-1.5 w-16" />
+                        <span className="text-xs text-muted-foreground tabular-nums">{order.progress}%</span>
                       </div>
-                      <div className="mt-2 text-sm font-medium leading-tight">{order.product}</div>
-                      <div className="text-[11px] text-muted-foreground mt-0.5">Qty <span className="text-foreground tabular-nums">{order.qty}</span>{order.due ? ` / Due ${order.due.slice(5)}` : ""}</div>
-                      {order.status === "In Progress" && (
-                        <div className="mt-3">
-                          <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-1">
-                            <span>Progress</span><span className="tabular-nums text-foreground">{order.progress}%</span>
-                          </div>
-                          <Progress value={order.progress} className="h-1.5" />
-                        </div>
-                      )}
-                      {order.status === "Completed" && (
-                        <div className="mt-3 flex items-center gap-1.5 text-[11px] text-success"><CheckCircle2 className="size-3" /> Stock updated</div>
-                      )}
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                    </td>
+                    <td className="px-4 py-3"><Badge className={statusTone[order.status]}>{order.status}</Badge></td>
+                    <td className="px-4 py-3 text-xs text-muted-foreground tabular-nums">{order.due || "N/A"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Card>
+        ) : (
+          <ScrollArea className="w-full whitespace-nowrap pb-4">
+            <div className="flex gap-4 min-w-max h-[70vh]">
+              {kanbanColumns.map(status => {
+                const columnOrders = orders.filter(o => o.status === status);
+                return (
+                  <div key={status} className="w-[320px] max-w-[400px] shrink-0 flex flex-col gap-3 bg-muted/20 rounded-xl p-3 border border-border/50 h-full overflow-hidden flex-1">
+                    <div className="flex items-center justify-between px-1">
+                      <h3 className="text-sm font-semibold tracking-tight text-foreground flex items-center gap-2">
+                        <Badge variant="outline" className={`border-0 w-2 h-2 p-0 rounded-full ${statusTone[status].split(" ")[0]}`} />
+                        {status}
+                      </h3>
+                      <Badge variant="secondary" className="text-xs bg-background">{columnOrders.length}</Badge>
+                    </div>
+                    
+                    <ScrollArea className="flex-1 -mx-1 px-1">
+                      <div className="flex flex-col gap-3 pb-2">
+                        {columnOrders.map(order => (
+                          <Card key={order.id} onClick={() => setSelected(order)} className="p-3 border-border/70 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer whitespace-normal flex flex-col gap-3 group relative cursor-grab active:cursor-grabbing">
+                            <div className="flex items-start justify-between">
+                              <span className="text-xs font-mono text-muted-foreground">{order.moNumber}</span>
+                              <Badge className={`${statusTone[order.status]} shrink-0 px-1.5 py-0`}>{order.status}</Badge>
+                            </div>
+                            <div>
+                              <div className="font-semibold text-sm line-clamp-1 group-hover:text-primary transition-colors">{order.product}</div>
+                              <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
+                                Qty: <span className="tabular-nums font-medium text-foreground">{order.qty}</span>
+                              </div>
+                            </div>
+                            {order.status === "In Progress" && (
+                              <div className="mt-1">
+                                <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-1">
+                                  <span>Progress</span><span className="tabular-nums text-foreground">{order.progress}%</span>
+                                </div>
+                                <Progress value={order.progress} className="h-1.5" />
+                              </div>
+                            )}
+                            <div className="flex items-center justify-between mt-1 pt-3 border-t border-border/40">
+                              <span className="text-[10px] text-muted-foreground tabular-nums">{order.due || "No deadline"}</span>
+                              <span className="text-[10px] font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">View Details</span>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  </div>
+                )
+              })}
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        )}
       </main>
 
       <Sheet open={!!selected} onOpenChange={(open) => !open && setSelected(null)}>
